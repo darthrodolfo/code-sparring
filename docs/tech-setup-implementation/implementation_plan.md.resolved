@@ -1,0 +1,67 @@
+# AircraftV2 Comprehensive Entity Plan
+
+## Goal
+Design the [AircraftV2] entity and its corresponding DTOs to test the maximum number of data types, structures, and native features of C#. This will serve as a rich foundation for the "Sparring" in other languages.
+
+**Critical Learning Requirement:** The USER is studying and requires guidance and reference for efficient learning. The AI must NOT write the final code automatically. The process must be step-by-step, allowing the USER to copy/type the code manually to maximize knowledge retention and study efficiency. The AI will provide snippets, explanations, and review the USER's implementation.
+
+## Proposed Changes
+
+### 1. Enums & Value Objects
+
+We will start by defining the supporting types.
+
+#### `AircraftRole` (Enum)
+Tests strongly typed enums and JSON string/int parsing.
+- `Fighter`, `Bomber`, `Transport`, `Trainer`, `Drone`, `Reconnaissance`
+
+#### `GeoLocation` (Record)
+Tests nested objects representing coordinates.
+- `Latitude` (double)
+- `Longitude` (double)
+
+#### `AircraftSpecs` (Record)
+Tests nested complex types and validations.
+- `MaxSpeedKmh` (int)
+- `WingspanMeters` (double)
+- `RangeKm` (int)
+
+### 2. The Entity / DTO: [AircraftV2](backend-csharp/Program.cs#15-22)
+
+Here are the proposed fields to cover all major data types:
+
+| Field                 | C# Type                      | Concept Tested                                 |
+| :-------------------- | :--------------------------- | :--------------------------------------------- |
+| `Id`                  | `Guid`                       | Unique Identifiers (UUIDv4/v7)                 |
+| `Model`               | `string`                     | Basic text, Trim validation, Max Length        |
+| `Manufacturer`        | `string`                     | Regex validation, Non-empty                    |
+| `YearOfManufacture`   | `int`                        | Integer ranges (e.g., 1903 to Current)         |
+| `PriceMillions`       | `decimal`                    | High precision numbers (financial/money)       |
+| `EmptyWeightKg`       | `double`                     | Floating point numbers                         |
+| `IsActive`            | `bool`                       | Boolean flags                                  |
+| `Role`                | `AircraftRole` (Enum)        | Enum serialization/deserialization             |
+| `Tags`                | `List<string>`               | Collections, array manipulations               |
+| `FirstFlightDate`     | `DateOnly`                   | Date without time (.NET specific type)         |
+| `LastMaintenanceTime` | `DateTimeOffset`             | Date and Time with Timezone awareness          |
+| `BaseLocation`        | `GeoLocation`                | Nested structs/records                         |
+| `Specs`               | `AircraftSpecs`              | Nested complex objects                         |
+| `Metadata`            | `Dictionary<string, string>` | Hash maps, unstructured JSON structures        |
+| `PhotoUrl`            | `Uri?`                       | Built-in URI types and Optional/Nullable types |
+| `ManualArchive`       | `byte[]?`                    | Binary payloads (for testing Multipart later)  |
+
+### 3. Implementation Steps in `backend-csharp`
+1. Define all these types at the bottom of [Program.cs](code-sparring/backend-csharp/Program.cs) (or in separate files if we want to organize now, but [Program.cs](code-sparring/backend-csharp/Program.cs) is fine for Phase 0.5).
+2. Create a `POST /aircraft-v2` endpoint that accepts [AircraftV2](code-sparring/backend-csharp/Program.cs#15-22) (or a `CreateAircraftV2Request` DTO without ID/Audit fields).
+3. Add a basic Minimal API validation flow.
+4. Return `201 Created` returning the parsed object to prove that C# successfully deserialized everything from a complex JSON.
+
+## User Review Required
+> [!CAUTION]
+> Please review the field list above. Is this the exact level of complexity you want to test across all languages? Are there any specific data types we missed that you want to test in C# (e.g., `TimeSpan`, `IPAddress`)?
+
+## Verification Plan
+
+### Manual Verification
+1. Run `dotnet run`.
+2. Send a `POST` request using `curl` or the IDE's HTTP client containing a massive JSON payload with all these fields.
+3. Verify that the API returns `200 OK` or `201 Created` and echoes the data back properly formatted (especially dates and enums).
