@@ -21,3 +21,27 @@ record AircraftV2
 }
 
 
+enum AircraftRole
+{
+    Fighter,
+    Bomber,
+    Transport,
+    Trainer,
+    Drone,
+    Reconnaissance
+}
+
+enum AircraftStatus
+{
+    Active,
+    Maintenance,
+    Retired,
+    Stored
+}
+
+record GeoLocation(double Latitude, double Longitude);
+
+record AircraftSpecs(int MaxSpeedKmh, double WingspanMeters,
+ int RangeKm, int? MaxAltitudeMeters, TimeSpan FlightEndurance);
+
+record ConflictHistory(string Name, int StartYear, int EndYear);
