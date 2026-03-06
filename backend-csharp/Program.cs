@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,9 +10,20 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(
         new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
+var connectionString = builder.Configuration.GetConnectionString("AeroStackDb");
 
 var app = builder.Build();
 
+
+using var initConnection = new SqliteConnection(connectionString);
+initConnection.Open();
+
+var sqlPath = Path.Combine(Directory.GetCurrentDirectory(), "sqlite", "001_create_tables.sql");
+var schemaSql = File.ReadAllText(sqlPath);
+
+using var schemaCmd = initConnection.CreateCommand();
+schemaCmd.CommandText = schemaSql;
+schemaCmd.ExecuteNonQuery();
 var aircraftStore = new ConcurrentDictionary<Guid, AircraftV2>();
 
 app.MapGet("/", () => "Hello AeroStack!");
