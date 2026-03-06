@@ -20,6 +20,51 @@ app.MapGet("/decolamos", () => "Decolamos!");
 
 app.MapGet("/aircraft", () => new List<AircraftV1>());
 
+app.MapGet("/aircraft-v2", () => aircraftStore.Values.ToList());
+
+app.MapGet("/aircraft-v2/{id:guid}", (Guid id) =>
+        aircraftStore.TryGetValue(id, out var aircraft)
+        ? Results.Ok(aircraft)
+        : Results.NotFound());
+
+app.MapDelete("/aircraft-v2/{id:guid}", (Guid id) =>
+    aircraftStore.TryRemove(id, out _)
+    ? Results.NoContent()
+    : Results.NotFound());
+
+app.MapPut("/aircraft-v2/{id:guid}", (Guid id, CreateAircraftV2Request req) =>
+{
+    if (aircraftStore.ContainsKey(id) == false)
+        return Results.NotFound();
+
+    var updated = new AircraftV2
+    {
+        Id = id,
+        Model = req.Model,
+        Manufacturer = req.Manufacturer,
+        SerialNumber = req.SerialNumber,
+        YearOfManufacture = req.YearOfManufacture,
+        PriceMillions = req.PriceMillions,
+        EmptyWeightKg = req.EmptyWeightKg,
+        Status = req.Status,
+        Role = req.Role,
+        Tags = req.Tags.AsReadOnly(),
+        FirstFlightDate = req.FirstFlightDate,
+        LastMaintenanceTime = req.LastMaintenanceTime,
+        BaseLocation = req.BaseLocation,
+        Specs = req.Specs,
+        Conflicts = req.Conflicts,
+        Metadata = req.Metadata,
+        EstimatedUnitsProduced = req.EstimatedUnitsProduced,
+        EstimatedActiveUnits = req.EstimatedActiveUnits,
+        PhotoUrl = req.PhotoUrl,
+        ManualArchive = req.ManualArchive
+    };
+
+    aircraftStore[id] = updated;
+    return Results.Ok(updated);
+});
+
 app.MapPost("/aircraft-v2", (CreateAircraftV2Request req) =>
 {
     var aircraft = new AircraftV2
