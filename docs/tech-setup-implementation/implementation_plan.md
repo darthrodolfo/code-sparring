@@ -5,6 +5,23 @@ Design the [AircraftV2] entity and its corresponding DTOs to test the maximum nu
 
 **Critical Learning Requirement:** The USER is studying and requires guidance and reference for efficient learning. The AI must NOT write the final code automatically. The process must be step-by-step, allowing the USER to copy/type the code manually to maximize knowledge retention and study efficiency. The AI will provide snippets, explanations, and review the USER's implementation.
 
+## Navigation Model
+
+**Background:** 15+ years of .NET/C# experience. Strong transferable fundamentals across stacks. Acceleration curve is steep — Phase 1 in any stack is revision + validation, not ground-zero learning.
+
+**The invariant (non-negotiable):**
+> Phase 0–1 in all requested stacks before asymmetric advancement in any single one.
+
+This ensures a comparative baseline exists across all languages when sparring begins in earnest.
+
+**After Phase 0–1 across all stacks — free navigation:**
+- Jump from C# Phase 1 to Phase 5–6 if the momentum is there
+- Come back and do Phase 2 across all stacks later
+- Switch to Go for a "rest" session, then return to C# — all valid
+- No mandatory linear progression per stack after the baseline is set
+
+**Rhythm:** Intense by design. Multiple stacks running simultaneously like parallel "games". Each session can be a different language or a different phase. A simple Hello World in a new language counts as active rest. The polyglot comparison is the training — not just the individual stack depth.
+
 ## Proposed Changes
 
 ### 1. Enums & Value Objects
@@ -60,6 +77,8 @@ Here are the fields covering all major C# data types and concepts:
 | `Specs`               | `AircraftSpecs`              | Nested complex object with nullable value type + TimeSpan   |
 | `Conflicts`           | `List<ConflictHistory>`      | List of complex objects (1:N simulation)                    |
 | `Metadata`            | `Dictionary<string, string>` | Hash maps, unstructured/dynamic JSON structures             |
+| `EstimatedUnitsProduced` | `int?`                    | Nullable value type — unknown for classified/experimental aircraft |
+| `EstimatedActiveUnits`   | `int?`                    | Nullable value type — operational count, often approximate  |
 | `PhotoUrl`            | `Uri?`                       | Built-in URI type + nullable reference type                 |
 | `ManualArchive`       | `byte[]?`                    | Binary payloads (for testing Multipart in later rounds)     |
 
