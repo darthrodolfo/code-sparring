@@ -55,7 +55,6 @@ Later:
 
 ### Next: Checkpoint Actions
 - Open Go Phase 0 (next stack baseline)
-- Python Round 1: full CRUD for AircraftV2 (GET by id, PUT, DELETE)
 
 ---
 
@@ -178,7 +177,7 @@ This is the **Phase 0: Lift-off**. After all stacks “take off”, we will incr
 ## Repo structure
 - /backend-csharp   (.NET 9 Minimal API)  ✅ current focus
 - /backend-go       (stdlib / Gin later)
-- /backend-python   (FastAPI / Pydantic v2) **Phase 0 COMPLETE — Phase 0.5 IN PROGRESS**
+- /backend-python   (FastAPI / Pydantic v2) **Phase 0 + 0.5 + Round 1 COMPLETE**
 - /backend-nodejs   (NestJS / Fastify)
 - /frontend-nextjs  (Next.js PWA - later)
 - /frontend-flutter (Flutter - later)
