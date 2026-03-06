@@ -109,10 +109,15 @@ Here are the fields covering all major C# data types and concepts:
 
 ### 3. Implementation Steps in `backend-csharp`
 
-1. Define all types at the bottom of [Program.cs](../../backend-csharp/Program.cs) (acceptable for Phase 0.5; can be split into files in Round 1+).
-2. Create a `POST /aircraft-v2` endpoint that accepts a `CreateAircraftV2Request` DTO (without `Id` — server generates it using `Guid.CreateVersion7()`).
-3. Add basic Minimal API validation flow.
-4. Return `201 Created` echoing the parsed and constructed `AircraftV2` object.
+1. ~~Define all types at the bottom of Program.cs~~ DONE
+2. ~~Create POST /aircraft-v2 with CreateAircraftV2Request DTO~~ DONE
+3. ~~Configure JsonStringEnumConverter for string enum serialization~~ DONE
+4. ~~Add ConcurrentDictionary in-memory storage~~ DONE
+5. Add GET /aircraft-v2 (list all from store)
+6. Add GET /aircraft-v2/{id} (lookup by Guid)
+7. Add PUT /aircraft-v2/{id} (update)
+8. Add DELETE /aircraft-v2/{id} (delete)
+9. Add SQLite persistence (cross-stack test data preservation)
 
 ### 4. What the Entity Does NOT Cover (Language Behavior)
 

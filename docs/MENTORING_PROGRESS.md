@@ -20,14 +20,24 @@ Later:
 
 ---
 
-## 📍 Current Status (Today)
-### Phase: Backend Foundations
-### Round: 1 → Core CRUD-ish + Validation (JSON only)
+## 📍 Current Status
 
-**Repository State**
-- `backend-csharp` created
-- `dotnet new web` executed
-- Minimal API scaffold ready
+### C# (.NET 9) — Phase 0.5 COMPLETE, Round 1 IN PROGRESS
+- AircraftV2 entity with 20 fields covering all major C# types
+- CreateAircraftV2Request DTO (no Id — server generates Guid v7)
+- Enums: AircraftRole, AircraftStatus (replaces bool flags)
+- Records: GeoLocation, AircraftSpecs (with int? + TimeSpan), ConflictHistory
+- POST /aircraft-v2 endpoint — 201 Created, JsonStringEnumConverter configured
+- ConcurrentDictionary in-memory storage — added, wiring CRUD endpoints next
+- requests.http with full payload + nullable payload test cases
+- Verified: enum as string, DateOnly, DateTimeOffset with offset, TimeSpan, nullable value types, nested objects, byte[] as Base64
+
+### Next: Round 1 completion
+- GET /aircraft-v2 (list all)
+- GET /aircraft-v2/{id} (by id)
+- PUT /aircraft-v2/{id} (update)
+- DELETE /aircraft-v2/{id} (delete)
+- Then: SQLite persistence for cross-stack test data
 
 ---
 
@@ -131,9 +141,9 @@ Start after Round 4:
 
 ---
 
-## 📝 Next Action (You)
-Implement **Round 1.5** in `backend-csharp` and paste your `Program.cs` here.
-Jarvis will review and demand corrections before you move on.
+## 📝 Next Action
+Complete Round 1 CRUD endpoints with ConcurrentDictionary storage, then add SQLite persistence.
+After C# checkpoint is solid, open Phase 0-1 in next stack (Go, Python, or Node).
 
 # 🥊 AeroStack Lab — IDE AI Context Pack (Phase 0: Lift-off)
 

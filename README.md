@@ -25,7 +25,8 @@ The main objective is to build the exact same business capabilities—managing a
 Development happens in structured "rounds", introducing new architectural and API design challenges progressively:
 
 - **Phase 0 — Lift-off:** Minimal project scaffold, health endpoint (`GET /decolamos`), and basic entity serialization.
-- **Round 1 — Core CRUD & Validation:** In-memory storage, strongly typed models (no stringly-typed design), explicit validation, and basic endpoints (`GET` and `POST` for `Aircraft`).
+- **Phase 0.5 — Rich Entity:** AircraftV2 with 20 fields covering all major language types, POST endpoint with DTO separation, enum serialization, nullable types validation. ✅ (C#)
+- **Round 1 — Core CRUD & In-Memory Storage:** ConcurrentDictionary storage, full CRUD endpoints (GET all, GET by id, PUT, DELETE), then SQLite persistence.
 - **Round 1.5 — Types & Validation Discipline:** Separate Domain vs DTOs, Enums for state/roles, normalized collections (tags).
 - **Round 2 — Nested Types:** Numeric constraints, optional fields, and defaulting rules.
 - **Round 3 — Image Uploads:** Binary and multipart payloads, size limits, and content-type validation.
