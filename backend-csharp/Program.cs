@@ -1,12 +1,7 @@
 using System.Collections.Concurrent;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Transactions;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
