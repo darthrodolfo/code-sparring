@@ -1,5 +1,10 @@
 using System.Collections.Concurrent;
+using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Transactions;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 
@@ -32,7 +37,73 @@ app.MapGet("/decolamos", () => "Decolamos!");
 
 app.MapGet("/aircraft", () => new List<AircraftV1>());
 
-app.MapGet("/aircraft-v2", () => aircraftStore.Values.ToList());
+app.MapGet("/aircraft-v2", () =>
+{
+    using var connection = CreateConnection();
+    using var listCommand = connection.CreateCommand();
+    listCommand.CommandText = "SELECT * FROM aircraft_v2";
+    using var reader = listCommand.ExecuteReader();
+
+    var aircraftList = new List<AircraftV2>();
+    while (reader.Read())
+    {
+        var id = Guid.Parse(reader.GetString(reader.GetOrdinal("id")));
+
+        using var tagCommand = connection.CreateCommand();
+        tagCommand.CommandText = "SELECT tag FROM aircraft_tags WHERE aircraft_id = @id";
+        tagCommand.Parameters.AddWithValue("@id", id.ToString());
+
+        var tagList = new List<string>();
+        using var tagReader = tagCommand.ExecuteReader();
+        while (tagReader.Read()) tagList.Add(tagReader.GetString(0));
+
+
+        using var conflictsCommand = connection.CreateCommand();
+        conflictsCommand.CommandText = @"SELECT name, start_year, end_year FROM aircraft_conflicts
+         where aircraft_id = @id";
+        conflictsCommand.Parameters.AddWithValue("@id", id.ToString());
+
+        var conflictList = new List<ConflictHistory>();
+        using var conflictReader = conflictsCommand.ExecuteReader();
+        while (conflictReader.Read())
+            conflictList.Add(new ConflictHistory(conflictReader.GetString(0),
+            conflictReader.GetInt32(1),
+            conflictReader.GetInt32(2)));
+
+        aircraftList.Add(new AircraftV2
+        {
+            Id = id,
+            Model = reader.GetString(reader.GetOrdinal("model")),
+            Manufacturer = reader.GetString(reader.GetOrdinal("manufacturer")),
+            SerialNumber = reader.IsDBNull(reader.GetOrdinal("serial_number")) ? null : reader.GetString(reader.GetOrdinal("serial_number")),
+            YearOfManufacture = reader.GetInt32(reader.GetOrdinal("year_of_manufacture")),
+            PriceMillions = decimal.Parse(reader.GetString(reader.GetOrdinal("price_millions")), CultureInfo.InvariantCulture),
+            EmptyWeightKg = reader.GetDouble(reader.GetOrdinal("empty_weight_kg")),
+            Status = Enum.Parse<AircraftStatus>(reader.GetString(reader.GetOrdinal("status"))),
+            Role = Enum.Parse<AircraftRole>(reader.GetString(reader.GetOrdinal("role"))),
+            Tags = tagList.AsReadOnly(),
+            FirstFlightDate = DateOnly.Parse(reader.GetString(reader.GetOrdinal("first_flight_date"))),
+            LastMaintenanceTime = DateTimeOffset.Parse(reader.GetString(reader.GetOrdinal("last_maintenance_time"))),
+            BaseLocation = new GeoLocation(
+                reader.GetDouble(reader.GetOrdinal("base_latitude")),
+                reader.GetDouble(reader.GetOrdinal("base_longitude"))),
+            Specs = new AircraftSpecs(
+                reader.GetInt32(reader.GetOrdinal("max_speed_kmh")),
+                reader.GetDouble(reader.GetOrdinal("wingspan_meters")),
+                reader.GetInt32(reader.GetOrdinal("range_km")),
+                reader.IsDBNull(reader.GetOrdinal("max_altitude_meters")) ? null : reader.GetInt32(reader.GetOrdinal("max_altitude_meters")),
+                TimeSpan.Parse(reader.GetString(reader.GetOrdinal("flight_endurance")))),
+            Conflicts = conflictList,
+            Metadata = JsonSerializer.Deserialize<Dictionary<string, string>>(reader.GetString(reader.GetOrdinal("metadata")))!,
+            EstimatedUnitsProduced = reader.IsDBNull(reader.GetOrdinal("estimated_units_produced")) ? null : reader.GetInt32(reader.GetOrdinal("estimated_units_produced")),
+            EstimatedActiveUnits = reader.IsDBNull(reader.GetOrdinal("estimated_active_units")) ? null : reader.GetInt32(reader.GetOrdinal("estimated_active_units")),
+            PhotoUrl = reader.IsDBNull(reader.GetOrdinal("photo_url")) ? null : new Uri(reader.GetString(reader.GetOrdinal("photo_url"))),
+            ManualArchive = reader.IsDBNull(reader.GetOrdinal("manual_archive")) ? null : (byte[])reader["manual_archive"]
+        });
+    }
+
+    return Results.Ok(aircraftList);
+});
 
 app.MapGet("/aircraft-v2/{id:guid}", (Guid id) =>
         aircraftStore.TryGetValue(id, out var aircraft)
@@ -104,9 +175,110 @@ app.MapPost("/aircraft-v2", (CreateAircraftV2Request req) =>
     };
 
     //return Results.Created($"/aircraft-v2/{aircraft.Id}", aircraft);
-    aircraftStore[aircraft.Id] = aircraft;
+
+    //aircraftStore[aircraft.Id] = aircraft;
+
+
+    using var connection = CreateConnection();
+    using var transaction = connection.BeginTransaction();
+
+    using var command = connection.CreateCommand();
+
+    command.CommandText = @"
+    INSERT INTO aircraft_v2 (id, model,
+     manufacturer, serial_number,
+    year_of_manufacture, price_millions,
+     empty_weight_kg, status,
+      role, first_flight_date,
+       last_maintenance_time,base_latitude,
+        base_longitude, max_speed_kmh
+    ,wingspan_meters, range_km, 
+    max_altitude_meters, flight_endurance,
+    metadata, estimated_units_produced,
+     estimated_active_units, photo_url,manual_archive 
+    ) VALUES (@id, @model,
+     @manufacturer, @serialNumber,
+      @yearOfManufacture, @priceMillions,
+       @emptyWeightKg, @status,
+        @role, @firstFlightDate, 
+        @lastMaintenanceTime, @baseLatitude, 
+            @baseLongitude, @maxSpeedKmh, 
+            @wingspanMeters, @rangeKm,
+            @maxAltitudeMeters, @flightEndurance,
+            @metadata, @estimatedUnitsProduced, 
+            @estimatedActiveUnits, @photoUrl,
+             @manualArchive
+            )
+    ";
+
+    command.Parameters.AddWithValue("@id", aircraft.Id.ToString());
+    command.Parameters.AddWithValue("@model", aircraft.Model);
+    command.Parameters.AddWithValue("@manufacturer", aircraft.Manufacturer);
+    command.Parameters.AddWithValue("@serialNumber", (object?)aircraft.SerialNumber ?? DBNull.Value);
+    command.Parameters.AddWithValue("@yearOfManufacture", aircraft.YearOfManufacture);
+    command.Parameters.AddWithValue("@priceMillions", aircraft.PriceMillions.ToString(CultureInfo.InvariantCulture));
+    command.Parameters.AddWithValue("@emptyWeightKg", aircraft.EmptyWeightKg);
+    command.Parameters.AddWithValue("@status", aircraft.Status.ToString());
+    command.Parameters.AddWithValue("@role", aircraft.Role.ToString());
+    command.Parameters.AddWithValue("@firstFlightDate", aircraft.FirstFlightDate.ToString("yyyy-MM-dd"));
+    command.Parameters.AddWithValue("@lastMaintenanceTime", aircraft.LastMaintenanceTime.ToString("o"));
+    command.Parameters.AddWithValue("@baseLatitude", aircraft.BaseLocation.Latitude);
+    command.Parameters.AddWithValue("@baseLongitude", aircraft.BaseLocation.Longitude);
+    command.Parameters.AddWithValue("@maxSpeedKmh", aircraft.Specs.MaxSpeedKmh);
+    command.Parameters.AddWithValue("@wingspanMeters", aircraft.Specs.WingspanMeters);
+    command.Parameters.AddWithValue("@rangeKm", aircraft.Specs.RangeKm);
+    command.Parameters.AddWithValue("@maxAltitudeMeters", (object?)aircraft.Specs.MaxAltitudeMeters ?? DBNull.Value);
+    command.Parameters.AddWithValue("@flightEndurance", aircraft.Specs.FlightEndurance.ToString());
+    command.Parameters.AddWithValue("@metadata", JsonSerializer.Serialize(aircraft.Metadata));
+    command.Parameters.AddWithValue("@estimatedUnitsProduced", (object?)aircraft.EstimatedUnitsProduced ?? DBNull.Value);
+    command.Parameters.AddWithValue("@estimatedActiveUnits", (object?)aircraft.EstimatedActiveUnits ?? DBNull.Value);
+    command.Parameters.AddWithValue("@photoUrl", (object?)aircraft.PhotoUrl?.ToString() ?? DBNull.Value);
+    command.Parameters.AddWithValue("@manualArchive", (object?)aircraft.ManualArchive ?? DBNull.Value);
+
+    command.ExecuteNonQuery();
+    using var tagCommand = connection.CreateCommand();
+    tagCommand.CommandText = "INSERT INTO aircraft_tags (aircraft_id, tag) VALUES (@aircraftId, @tag)";
+    tagCommand.Parameters.Add(new SqliteParameter("@aircraftId", aircraft.Id.ToString()));
+    tagCommand.Parameters.Add(new SqliteParameter("@tag", ""));
+
+    foreach (var tag in aircraft.Tags)
+    {
+        tagCommand.Parameters["@tag"].Value = tag;
+        tagCommand.ExecuteNonQuery();
+    }
+
+    using var conflictCommand = connection.CreateCommand();
+    conflictCommand.CommandText = @"INSERT INTO aircraft_conflicts (aircraft_id, name, start_year, end_year)
+     VALUES (@aircraftId, @name, @startYear, @endYear)";
+    conflictCommand.Parameters.Add(new SqliteParameter("@aircraftId", aircraft.Id.ToString()));
+    conflictCommand.Parameters.Add(new SqliteParameter("@name", String.Empty));
+    conflictCommand.Parameters.Add(new SqliteParameter("@startYear", 0));
+    conflictCommand.Parameters.Add(new SqliteParameter("@endYear", 0));
+
+    foreach (var conflict in aircraft.Conflicts)
+    {
+        conflictCommand.Parameters["@name"].Value = conflict.Name;
+        conflictCommand.Parameters["@startYear"].Value = conflict.StartYear;
+        conflictCommand.Parameters["@endYear"].Value = conflict.EndYear;
+        conflictCommand.ExecuteNonQuery();
+    }
+
+
+    transaction.Commit();
     return Results.Created($"/aircraft-v2/{aircraft.Id}", aircraft);
+
+
 });
+
+SqliteConnection CreateConnection()
+{
+    var conn = new SqliteConnection(connectionString);
+    conn.Open();
+    using var pragmaFlag = conn.CreateCommand();
+    pragmaFlag.CommandText = "PRAGMA foreign_keys = ON";
+    pragmaFlag.ExecuteNonQuery();
+    return conn;
+}
 
 app.Run();
 
