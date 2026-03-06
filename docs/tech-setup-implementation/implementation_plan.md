@@ -59,51 +59,51 @@ Tests lists of complex objects (1:N simulation). Note: `Duration` as `string` wa
 
 Here are the fields covering all major C# data types and concepts:
 
-| Field                 | C# Type                      | Concept Tested                                              |
-| :-------------------- | :--------------------------- | :---------------------------------------------------------- |
-| `Id`                  | `Guid`                       | Unique Identifiers (UUIDv4/v7 — use `Guid.CreateVersion7()` in .NET 9) |
-| `Model`               | `string`                     | Basic text, Trim validation, Max Length                     |
-| `Manufacturer`        | `string`                     | Regex validation, Non-empty                                 |
-| `SerialNumber`        | `string?`                    | Nullable reference type (string), optional field            |
-| `YearOfManufacture`   | `int`                        | Integer ranges (e.g., 1903 to current year)                 |
-| `PriceMillions`       | `decimal`                    | High precision numbers (financial/money — never use double) |
-| `EmptyWeightKg`       | `double`                     | Floating point numbers                                      |
-| `Status`              | `AircraftStatus` (Enum)      | Enum as state — replaces stringly-typed bool flags          |
-| `Role`                | `AircraftRole` (Enum)        | Enum serialization/deserialization                          |
-| `Tags`                | `IReadOnlyList<string>`      | Immutable collection on domain model; request DTO uses `List<string>` |
-| `FirstFlightDate`     | `DateOnly`                   | Date without time — .NET-specific type                      |
-| `LastMaintenanceTime` | `DateTimeOffset`             | Date and Time with Timezone awareness (vs `DateTime`)       |
-| `BaseLocation`        | `GeoLocation`                | Nested record/value object                                  |
-| `Specs`               | `AircraftSpecs`              | Nested complex object with nullable value type + TimeSpan   |
-| `Conflicts`           | `List<ConflictHistory>`      | List of complex objects (1:N simulation)                    |
-| `Metadata`            | `Dictionary<string, string>` | Hash maps, unstructured/dynamic JSON structures             |
-| `EstimatedUnitsProduced` | `int?`                    | Nullable value type — unknown for classified/experimental aircraft |
-| `EstimatedActiveUnits`   | `int?`                    | Nullable value type — operational count, often approximate  |
-| `PhotoUrl`            | `Uri?`                       | Built-in URI type + nullable reference type                 |
-| `ManualArchive`       | `byte[]?`                    | Binary payloads (for testing Multipart in later rounds)     |
+| Field                    | C# Type                      | Concept Tested                                                         |
+| :----------------------- | :--------------------------- | :--------------------------------------------------------------------- |
+| `Id`                     | `Guid`                       | Unique Identifiers (UUIDv4/v7 — use `Guid.CreateVersion7()` in .NET 9) |
+| `Model`                  | `string`                     | Basic text, Trim validation, Max Length                                |
+| `Manufacturer`           | `string`                     | Regex validation, Non-empty                                            |
+| `SerialNumber`           | `string?`                    | Nullable reference type (string), optional field                       |
+| `YearOfManufacture`      | `int`                        | Integer ranges (e.g., 1903 to current year)                            |
+| `PriceMillions`          | `decimal`                    | High precision numbers (financial/money — never use double)            |
+| `EmptyWeightKg`          | `double`                     | Floating point numbers                                                 |
+| `Status`                 | `AircraftStatus` (Enum)      | Enum as state — replaces stringly-typed bool flags                     |
+| `Role`                   | `AircraftRole` (Enum)        | Enum serialization/deserialization                                     |
+| `Tags`                   | `IReadOnlyList<string>`      | Immutable collection on domain model; request DTO uses `List<string>`  |
+| `FirstFlightDate`        | `DateOnly`                   | Date without time — .NET-specific type                                 |
+| `LastMaintenanceTime`    | `DateTimeOffset`             | Date and Time with Timezone awareness (vs `DateTime`)                  |
+| `BaseLocation`           | `GeoLocation`                | Nested record/value object                                             |
+| `Specs`                  | `AircraftSpecs`              | Nested complex object with nullable value type + TimeSpan              |
+| `Conflicts`              | `List<ConflictHistory>`      | List of complex objects (1:N simulation)                               |
+| `Metadata`               | `Dictionary<string, string>` | Hash maps, unstructured/dynamic JSON structures                        |
+| `EstimatedUnitsProduced` | `int?`                       | Nullable value type — unknown for classified/experimental aircraft     |
+| `EstimatedActiveUnits`   | `int?`                       | Nullable value type — operational count, often approximate             |
+| `PhotoUrl`               | `Uri?`                       | Built-in URI type + nullable reference type                            |
+| `ManualArchive`          | `byte[]?`                    | Binary payloads (for testing Multipart in later rounds)                |
 
 ### Type Concept Coverage Summary
 
-| Category                  | C# Concept                    | Where It Appears                        |
-| :------------------------ | :---------------------------- | :-------------------------------------- |
-| Integers                  | `int`                         | YearOfManufacture, MaxSpeedKmh, etc.    |
-| Nullable value type       | `int?` (`Nullable<int>`)      | MaxAltitudeMeters                       |
-| Floating point            | `double`                      | EmptyWeightKg, WingspanMeters           |
-| High-precision decimal    | `decimal`                     | PriceMillions                           |
-| Text                      | `string`                      | Model, Manufacturer                     |
-| Nullable reference type   | `string?`, `Uri?`, `byte[]?`  | SerialNumber, PhotoUrl, ManualArchive   |
-| Boolean                   | `bool`                        | Not used — replaced by AircraftStatus enum (intentional design decision) |
-| Unique identifier         | `Guid`                        | Id                                      |
-| Enum                      | `AircraftRole`, `AircraftStatus` | Role, Status                         |
-| Date without time         | `DateOnly`                    | FirstFlightDate                         |
-| Date + time + timezone    | `DateTimeOffset`              | LastMaintenanceTime                     |
-| Duration                  | `TimeSpan`                    | FlightEndurance (in AircraftSpecs)      |
-| Immutable collection      | `IReadOnlyList<string>`       | Tags (domain model)                     |
-| Mutable collection        | `List<T>`                     | Conflicts                               |
-| Hash map                  | `Dictionary<K, V>`            | Metadata                                |
-| Nested record             | `GeoLocation`, `AircraftSpecs`, `ConflictHistory` | Nested types     |
-| Built-in type             | `Uri`                         | PhotoUrl                                |
-| Binary                    | `byte[]`                      | ManualArchive                           |
+| Category                | C# Concept                                        | Where It Appears                                                         |
+| :---------------------- | :------------------------------------------------ | :----------------------------------------------------------------------- |
+| Integers                | `int`                                             | YearOfManufacture, MaxSpeedKmh, etc.                                     |
+| Nullable value type     | `int?` (`Nullable<int>`)                          | MaxAltitudeMeters                                                        |
+| Floating point          | `double`                                          | EmptyWeightKg, WingspanMeters                                            |
+| High-precision decimal  | `decimal`                                         | PriceMillions                                                            |
+| Text                    | `string`                                          | Model, Manufacturer                                                      |
+| Nullable reference type | `string?`, `Uri?`, `byte[]?`                      | SerialNumber, PhotoUrl, ManualArchive                                    |
+| Boolean                 | `bool`                                            | Not used — replaced by AircraftStatus enum (intentional design decision) |
+| Unique identifier       | `Guid`                                            | Id                                                                       |
+| Enum                    | `AircraftRole`, `AircraftStatus`                  | Role, Status                                                             |
+| Date without time       | `DateOnly`                                        | FirstFlightDate                                                          |
+| Date + time + timezone  | `DateTimeOffset`                                  | LastMaintenanceTime                                                      |
+| Duration                | `TimeSpan`                                        | FlightEndurance (in AircraftSpecs)                                       |
+| Immutable collection    | `IReadOnlyList<string>`                           | Tags (domain model)                                                      |
+| Mutable collection      | `List<T>`                                         | Conflicts                                                                |
+| Hash map                | `Dictionary<K, V>`                                | Metadata                                                                 |
+| Nested record           | `GeoLocation`, `AircraftSpecs`, `ConflictHistory` | Nested types                                                             |
+| Built-in type           | `Uri`                                             | PhotoUrl                                                                 |
+| Binary                  | `byte[]`                                          | ManualArchive                                                            |
 
 > **Note on `bool`:** `IsActive: bool` was intentionally removed. A single boolean can never represent a real status lifecycle (Active → Maintenance → Retired). `AircraftStatus` enum is the correct design. This is a deliberate teaching point about avoiding primitive obsession.
 
@@ -123,16 +123,16 @@ Here are the fields covering all major C# data types and concepts:
 
 The entity covers **data types**. C# fundamentals are also exercised through *behavior*. These are tested via how the endpoints and storage are implemented:
 
-| C# Feature             | Where It Gets Exercised                                    |
-| :--------------------- | :--------------------------------------------------------- |
-| `async/await`          | Making endpoints async (`async Task<IResult>`)             |
-| LINQ                   | Filtering/searching the in-memory list (Round 5)           |
-| Pattern matching       | `switch` expressions in validation or status transitions   |
-| Generics               | Generic result wrappers, generic validation helpers        |
-| Interfaces             | Defining a storage contract (`IAircraftRepository`)        |
-| Exception handling     | Global error middleware, `try/catch` in validation         |
-| Extension methods      | Custom validators, fluent helpers on collections           |
-| `ConcurrentDictionary` | Thread-safe in-memory storage (Round 1)                    |
+| C# Feature             | Where It Gets Exercised                                      |
+| :--------------------- | :----------------------------------------------------------- |
+| `async/await`          | Making endpoints async (`async Task<IResult>`)               |
+| LINQ                   | Filtering/searching the in-memory list (Round 5)             |
+| Pattern matching       | `switch` expressions in validation or status transitions     |
+| Generics               | Generic result wrappers, generic validation helpers          |
+| Interfaces             | Defining a storage contract (`IAircraftRepository`)          |
+| Exception handling     | Global error middleware, `try/catch` in validation           |
+| Extension methods      | Custom validators, fluent helpers on collections             |
+| `ConcurrentDictionary` | Thread-safe in-memory storage (Round 1)                      |
 | `record` vs `class`    | Domain model (`record`) vs request DTO (`class`) distinction |
 
 ## Verification Plan

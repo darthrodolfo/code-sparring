@@ -22,22 +22,24 @@ Later:
 
 ## 📍 Current Status
 
-### C# (.NET 9) — Phase 0.5 COMPLETE, Round 1 IN PROGRESS
+### C# (.NET 9) — Phase 0.5 COMPLETE, Round 1 COMPLETE
 - AircraftV2 entity with 20 fields covering all major C# types
 - CreateAircraftV2Request DTO (no Id — server generates Guid v7)
 - Enums: AircraftRole, AircraftStatus (replaces bool flags)
 - Records: GeoLocation, AircraftSpecs (with int? + TimeSpan), ConflictHistory
 - POST /aircraft-v2 endpoint — 201 Created, JsonStringEnumConverter configured
-- ConcurrentDictionary in-memory storage — added, wiring CRUD endpoints next
-- requests.http with full payload + nullable payload test cases
-- Verified: enum as string, DateOnly, DateTimeOffset with offset, TimeSpan, nullable value types, nested objects, byte[] as Base64
-
-### Next: Round 1 completion
 - GET /aircraft-v2 (list all)
 - GET /aircraft-v2/{id} (by id)
 - PUT /aircraft-v2/{id} (update)
 - DELETE /aircraft-v2/{id} (delete)
-- Then: SQLite persistence for cross-stack test data
+- **SQLite persistence added for all CRUD operations** (cross-stack test data preservation)
+- requests.http with full payload + nullable payload + PUT/DELETE test cases
+- Verified: enum as string, DateOnly, DateTimeOffset with offset, TimeSpan, nullable value types, nested objects, byte[] as Base64
+
+### Next: Checkpoint Actions
+- Review and test all SQLite endpoints in C#
+- Commit changes
+- After C# checkpoint is solid, open Phase 0-1 in next stack (Go, Python, or Node).
 
 ---
 

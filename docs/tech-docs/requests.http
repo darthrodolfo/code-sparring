@@ -101,3 +101,58 @@ Content-Type: application/json
   "photoUrl": null,
   "manualArchive": null
 }
+
+### Get Aircraft by ID
+# Replace the UUID below with an actual ID returned from a POST request
+GET http://localhost:5202/aircraft-v2/01956dfb-1234-7890-abcd-ef1234567890
+
+### Update Aircraft (PUT)
+# Replace the UUID below with an actual ID
+PUT http://localhost:5202/aircraft-v2/01956dfb-1234-7890-abcd-ef1234567890
+Content-Type: application/json
+
+{
+  "model": "Su-57 Felon MODIFIED",
+  "manufacturer": "Sukhoi Company",
+  "serialNumber": "T-50-11-UPDATED",
+  "yearOfManufacture": 2011,
+  "priceMillions": 45.0,
+  "emptyWeightKg": 18500.0,
+  "status": "Maintenance",
+  "role": "Fighter",
+  "tags": ["stealth", "5th-gen", "twin-engine", "supermaneuverability", "updated-tag"],
+  "firstFlightDate": "2010-01-29",
+  "lastMaintenanceTime": "2026-03-05T12:00:00+03:00",
+  "baseLocation": {
+    "latitude": 51.0,
+    "longitude": 37.0
+  },
+  "specs": {
+    "maxSpeedKmh": 2500,
+    "wingspanMeters": 14.1,
+    "rangeKm": 3500,
+    "maxAltitudeMeters": 19000,
+    "flightEndurance": "06:00:00"
+  },
+  "conflicts": [
+    {
+      "name": "Syrian Civil War (Updated)",
+      "startYear": 2018,
+      "endYear": 2024
+    }
+  ],
+  "metadata": {
+    "natoDesignation": "Felon",
+    "generation": "5",
+    "engineCount": "2",
+    "updated": "true"
+  },
+  "estimatedUnitsProduced": 31,
+  "estimatedActiveUnits": 11,
+  "photoUrl": "https://www.google.com/search?udm=2&q=Sukhoi+Su-57+Felon",
+  "manualArchive": "U3Vra29pIFN1LTU3IFRlY2huaWNhbCBNYW51YWw="
+}
+
+### Delete Aircraft
+# Replace the UUID below with an actual ID
+DELETE http://localhost:5202/aircraft-v2/01956dfb-1234-7890-abcd-ef1234567890
