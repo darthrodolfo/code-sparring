@@ -41,9 +41,11 @@ uvicorn main:app --reload --port 8000
   - `GET /aircraft` — list all (empty initially)
   - `POST /aircraft` — create with validation
 
-- **Phase 0.5 — Rich Entity:** IN PROGRESS
+- **Phase 0.5 — Rich Entity:** COMPLETE
   - `AircraftV2` with 20 fields covering all major Python types
-  - Enums, nested models, optional fields, collections
+  - Enums (`str, Enum`), nested models, optional fields, collections
+  - `GET /aircraft-v2`, `POST /aircraft-v2`
+  - Verified: `Decimal`, `date`, `datetime`, `timedelta` (ISO 8601), `bytes` (Base64), `null` explicit
 
 ## API Testing
 
