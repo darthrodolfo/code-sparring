@@ -249,7 +249,7 @@ app.MapPut("/aircraft-v2/{id:guid}", (Guid id, CreateAircraftV2Request req) =>
     using var tagCommand = connection.CreateCommand();
     tagCommand.CommandText = "INSERT INTO aircraft_tags (aircraft_id, tag) VALUES (@aircraftId, @tag)";
     tagCommand.Parameters.Add(new SqliteParameter("@aircraftId", id.ToString()));
-    tagCommand.Parameters.Add(new SqliteParameter("@tag", ""));
+    tagCommand.Parameters.Add(new SqliteParameter("@tag", String.Empty));
     foreach (var tag in req.Tags)
     {
         tagCommand.Parameters["@tag"].Value = tag;
@@ -331,11 +331,6 @@ app.MapPost("/aircraft-v2", (CreateAircraftV2Request req) =>
         PhotoUrl = req.PhotoUrl,
         ManualArchive = req.ManualArchive
     };
-
-    //return Results.Created($"/aircraft-v2/{aircraft.Id}", aircraft);
-
-    //aircraftStore[aircraft.Id] = aircraft;
-
 
     using var connection = CreateConnection();
     using var transaction = connection.BeginTransaction();
