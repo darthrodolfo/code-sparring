@@ -36,10 +36,17 @@ Later:
 - requests.http with full payload + nullable payload + PUT/DELETE test cases
 - Verified: enum as string, DateOnly, DateTimeOffset with offset, TimeSpan, nullable value types, nested objects, byte[] as Base64
 
+### Python (FastAPI / Pydantic v2) — Phase 0 COMPLETE, Phase 0.5 IN PROGRESS
+- venv + FastAPI 0.135.1 + Pydantic v2 + Uvicorn scaffolded
+- GET /decolamos, GET /aircraft, POST /aircraft with validation
+- Enums: AircraftRole, AircraftStatus (str, Enum pattern)
+- GeoLocation nested model started
+- async def pattern adopted on routes
+- Next: AircraftSpecs, ConflictHistory, AircraftV2 entity (20 fields)
+
 ### Next: Checkpoint Actions
-- Review and test all SQLite endpoints in C#
-- Commit changes
-- After C# checkpoint is solid, open Phase 0-1 in next stack (Go, Python, or Node).
+- Complete AircraftV2 in Python (Phase 0.5)
+- After Python Phase 0.5, open Go Phase 0
 
 ---
 
@@ -162,7 +169,7 @@ This is the **Phase 0: Lift-off**. After all stacks “take off”, we will incr
 ## Repo structure
 - /backend-csharp   (.NET 9 Minimal API)  ✅ current focus
 - /backend-go       (stdlib / Gin later)
-- /backend-python   (FastAPI / Pydantic v2)
+- /backend-python   (FastAPI / Pydantic v2) **Phase 0 COMPLETE — Phase 0.5 IN PROGRESS**
 - /backend-nodejs   (NestJS / Fastify)
 - /frontend-nextjs  (Next.js PWA - later)
 - /frontend-flutter (Flutter - later)

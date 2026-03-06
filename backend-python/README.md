@@ -36,10 +36,14 @@ uvicorn main:app --reload --port 8000
 
 ## Phase Status
 
-- **Phase 0 — Lift-off:** IN PROGRESS
+- **Phase 0 — Lift-off:** COMPLETE
   - `GET /decolamos` — health check
   - `GET /aircraft` — list all (empty initially)
   - `POST /aircraft` — create with validation
+
+- **Phase 0.5 — Rich Entity:** IN PROGRESS
+  - `AircraftV2` with 20 fields covering all major Python types
+  - Enums, nested models, optional fields, collections
 
 ## API Testing
 
