@@ -48,6 +48,8 @@ Later:
 - GET /aircraft-v2/{id} — get by id (CRUD)
 - PUT /aircraft-v2/{id} — full update (CRUD)
 - DELETE /aircraft-v2/{id} — remove by id (CRUD)
+- **SQLite persistence added for all CRUD operations** (shared DB setup)
+- **Dependency Injection** via FastAPI `Depends` for `aiosqlite` HTTP requests
 - Verified: Decimal as string, date as ISO 8601, datetime as UTC, timedelta as PT format, bytes as Base64, null explicit
 - requests.http with full payload + nullable fields + PUT/DELETE test cases
 
