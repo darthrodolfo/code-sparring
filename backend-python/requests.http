@@ -1,0 +1,45 @@
+### Health Check
+GET http://localhost:8000/decolamos
+
+### List Aircraft
+GET http://localhost:8000/aircraft
+
+### Create Aircraft
+POST http://localhost:8000/aircraft
+Content-Type: application/json
+
+{
+  "model": "F-16C",
+  "manufacturer": "Lockheed Martin",
+  "year": 1991
+}
+
+### Create Aircraft — edge case: earliest valid year
+POST http://localhost:8000/aircraft
+Content-Type: application/json
+
+{
+  "model": "Wright Flyer",
+  "manufacturer": "Wright Brothers",
+  "year": 1903
+}
+
+### Create Aircraft — should fail: year too old
+POST http://localhost:8000/aircraft
+Content-Type: application/json
+
+{
+  "model": "Invalid",
+  "manufacturer": "Nobody",
+  "year": 1800
+}
+
+### Create Aircraft — should fail: empty model
+POST http://localhost:8000/aircraft
+Content-Type: application/json
+
+{
+  "model": "",
+  "manufacturer": "Test",
+  "year": 2020
+}
