@@ -7,6 +7,34 @@ app.MapGet("/decolamos", () => "Decolamos!");
 
 app.MapGet("/aircraft", () => new List<AircraftV1>());
 
+app.MapPost("/aircraft-v2", (CreateAircraftV2Request req) =>
+{
+    var aircraft = new AircraftV2
+    {
+        Id = Guid.CreateVersion7(),
+        Model = req.Model,
+        Manufacturer = req.Manufacturer,
+        SerialNumber = req.SerialNumber,
+        YearOfManufacture = req.YearOfManufacture,
+        PriceMillions = req.PriceMillions,
+        EmptyWeightKg = req.EmptyWeightKg,
+        Status = req.Status,
+        Role = req.Role,
+        Tags = req.Tags.AsReadOnly(),
+        FirstFlightDate = req.FirstFlightDate,
+        LastMaintenanceTime = req.LastMaintenanceTime,
+        BaseLocation = req.BaseLocation,
+        Specs = req.Specs,
+        Conflicts = req.Conflicts,
+        Metadata = req.Metadata,
+        EstimatedUnitsProduced = req.EstimatedUnitsProduced,
+        EstimatedActiveUnits = req.EstimatedActiveUnits,
+        PhotoUrl = req.PhotoUrl,
+        ManualArchive = req.ManualArchive
+    };
+
+    return Results.Created($"/aircraft-v2/{aircraft.Id}", aircraft);
+});
 
 app.Run();
 
@@ -17,7 +45,48 @@ record AircraftV2
     public required Guid Id { get; init; }
     public required string Model { get; init; }
     public required string Manufacturer { get; init; }
-    public required int Year { get; init; }
+    public string? SerialNumber { get; init; }
+    public required int YearOfManufacture { get; init; }
+    public required decimal PriceMillions { get; init; }
+    public required double EmptyWeightKg { get; init; }
+    public required AircraftStatus Status { get; init; }
+    public required AircraftRole Role { get; init; }
+    public required IReadOnlyList<string> Tags { get; init; }
+    public required DateOnly FirstFlightDate { get; init; }
+    public required DateTimeOffset LastMaintenanceTime { get; init; }
+    public required GeoLocation BaseLocation { get; init; }
+    public required AircraftSpecs Specs { get; init; }
+    public required List<ConflictHistory> Conflicts { get; init; }
+    public required Dictionary<string, string> Metadata { get; init; }
+    public int? EstimatedUnitsProduced { get; init; }
+    public int? EstimatedActiveUnits { get; init; }
+    public Uri? PhotoUrl { get; init; }
+    public byte[]? ManualArchive { get; init; }
+
+}
+
+record CreateAircraftV2Request
+{
+    public required string Model { get; init; }
+    public required string Manufacturer { get; init; }
+    public string? SerialNumber { get; init; }
+    public required int YearOfManufacture { get; init; }
+    public required decimal PriceMillions { get; init; }
+    public required double EmptyWeightKg { get; init; }
+    public required AircraftStatus Status { get; init; }
+    public required AircraftRole Role { get; init; }
+    public required List<string> Tags { get; init; }
+    public required DateOnly FirstFlightDate { get; init; }
+    public required DateTimeOffset LastMaintenanceTime { get; init; }
+    public required GeoLocation BaseLocation { get; init; }
+    public required AircraftSpecs Specs { get; init; }
+    public required List<ConflictHistory> Conflicts { get; init; }
+    public required Dictionary<string, string> Metadata { get; init; }
+    public int? EstimatedUnitsProduced { get; init; }
+    public int? EstimatedActiveUnits { get; init; }
+    public Uri? PhotoUrl { get; init; }
+    public byte[]? ManualArchive { get; init; }
+
 }
 
 
@@ -45,3 +114,4 @@ record AircraftSpecs(int MaxSpeedKmh, double WingspanMeters,
  int RangeKm, int? MaxAltitudeMeters, TimeSpan FlightEndurance);
 
 record ConflictHistory(string Name, int StartYear, int EndYear);
+
