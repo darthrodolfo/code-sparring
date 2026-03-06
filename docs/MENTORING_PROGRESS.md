@@ -36,7 +36,7 @@ Later:
 - requests.http with full payload + nullable payload + PUT/DELETE test cases
 - Verified: enum as string, DateOnly, DateTimeOffset with offset, TimeSpan, nullable value types, nested objects, byte[] as Base64
 
-### Python (FastAPI / Pydantic v2) — Phase 0 COMPLETE, Phase 0.5 COMPLETE
+### Python (FastAPI / Pydantic v2) — Phase 0 COMPLETE, Phase 0.5 COMPLETE, Round 1 COMPLETE
 - venv + FastAPI 0.135.1 + Pydantic v2 + Uvicorn scaffolded
 - GET /decolamos, GET /aircraft, POST /aircraft with validation
 - Enums: AircraftRole, AircraftStatus (str, Enum — serializes as string natively)
@@ -44,9 +44,12 @@ Later:
 - AircraftV2 entity: 20 fields covering all major Python types
 - CreateAircraftV2Request DTO with Field validators (ge, le, gt, min_length, max_length)
 - POST /aircraft-v2 — 201 Created + Location header
-- GET /aircraft-v2 — list all
+- GET /aircraft-v2 — list all (CRUD)
+- GET /aircraft-v2/{id} — get by id (CRUD)
+- PUT /aircraft-v2/{id} — full update (CRUD)
+- DELETE /aircraft-v2/{id} — remove by id (CRUD)
 - Verified: Decimal as string, date as ISO 8601, datetime as UTC, timedelta as PT format, bytes as Base64, null explicit
-- requests.http with full payload + nullable fields omitted test cases
+- requests.http with full payload + nullable fields + PUT/DELETE test cases
 
 ### Next: Checkpoint Actions
 - Open Go Phase 0 (next stack baseline)
