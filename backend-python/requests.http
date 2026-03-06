@@ -2,7 +2,7 @@
 GET http://localhost:8000/decolamos
 
 ### List Aircraft
-GET http://localhost:8000/aircraft
+GET http://localhost:8000/aircraft-v2
 
 ### Create Aircraft
 POST http://localhost:8000/aircraft
