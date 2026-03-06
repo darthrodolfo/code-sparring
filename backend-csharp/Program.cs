@@ -1,5 +1,18 @@
+using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Options;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(
+        new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
+
 var app = builder.Build();
+
+var aircraftStore = new ConcurrentDictionary<Guid, AircraftV2>();
 
 app.MapGet("/", () => "Hello AeroStack!");
 
@@ -33,6 +46,8 @@ app.MapPost("/aircraft-v2", (CreateAircraftV2Request req) =>
         ManualArchive = req.ManualArchive
     };
 
+    //return Results.Created($"/aircraft-v2/{aircraft.Id}", aircraft);
+    aircraftStore[aircraft.Id] = aircraft;
     return Results.Created($"/aircraft-v2/{aircraft.Id}", aircraft);
 });
 
