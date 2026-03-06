@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, HTTPException
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
 from datetime import datetime, date, timedelta
@@ -98,6 +98,12 @@ aircraft_v2_store: dict[UUID, AircraftV2] = {}
 async def list_aircraft_v2() -> list[AircraftV2]:
     return list(aircraft_v2_store.values())
 
+@app.get("/aircraft-v2/{id}")
+async def get_aircraft_v2(id: UUID) -> AircraftV2:
+    if id not in aircraft_v2_store:
+        raise HTTPException(status_code=404, detail="Aircraft not found")
+    return aircraft_v2_store[id]
+
 @app.get("/decolamos")
 def health():
     return "Decolamos"
@@ -142,6 +148,43 @@ async def create_aircraft_v2(request: CreateAircraftV2Request, response: Respons
     aircraft_v2_store[aircraft.id] = aircraft
     response.headers["Location"] = f"/aircraft-v2/{aircraft.id}"
     return aircraft
+
+@app.put("/aircraft-v2/{id}")
+async def update_aircraft_v2(id: UUID, request: CreateAircraftV2Request) -> AircraftV2:
+    if id not in aircraft_v2_store:
+        raise HTTPException(status_code=404, detail="Aircraft not found")
+
+    aircraft = AircraftV2(
+        id=id,
+        model=request.model.strip(),
+        manufacturer=request.manufacturer.strip(),
+        serial_number=request.serial_number,
+        year_of_manufacture=request.year_of_manufacture,
+        price_millions=request.price_millions,
+        empty_weight_kg=request.empty_weight_kg,
+        status=request.status,
+        role=request.role,
+        tags=request.tags,
+        first_flight_date=request.first_flight_date,
+        last_maintenance_time=request.last_maintenance_time,
+        base_location=request.base_location,
+        specs=request.specs,
+        conflicts=request.conflicts,
+        metadata=request.metadata,
+        estimated_units_produced=request.estimated_units_produced,
+        estimated_active_units=request.estimated_active_units,
+        photo_url=request.photo_url,
+        manual_archive=request.manual_archive,
+    )
+    aircraft_v2_store[id] = aircraft
+    return aircraft
+
+@app.delete("/aircraft-v2/{id}", status_code=204)
+async def delete_aircraft_v2(id: UUID):
+    if id not in aircraft_v2_store:
+        raise HTTPException(status_code=404, detail="Aircraft not found")
+    del aircraft_v2_store[id]
+    return Response(status_code=204)
 
 
     
