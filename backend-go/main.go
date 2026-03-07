@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"log"
@@ -375,13 +376,8 @@ func createAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
 	req.Model = strings.TrimSpace(req.Model)
 	req.Manufacturer = strings.TrimSpace(req.Manufacturer)
 
-	if req.Model == "" {
-		writeError(w, http.StatusBadRequest, "validation error", "model is required")
-		return
-	}
-	if req.Manufacturer == "" {
-		writeError(w, http.StatusBadRequest, "validation error", "manufacturer is required")
-		return
+	if err := validateCreateAircraftV2Request(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "validation error", err.Error())
 	}
 
 	entity := mapCreateRequestToAircraftV2(req)
@@ -411,6 +407,7 @@ func updateAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req CreateAircraftV2Request
+
 	if err := decodeJSON(r, &req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request body", err.Error())
 		return
@@ -419,18 +416,13 @@ func updateAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
 	req.Model = strings.TrimSpace(req.Model)
 	req.Manufacturer = strings.TrimSpace(req.Manufacturer)
 
-	if req.Model == "" {
-		writeError(w, http.StatusBadRequest, "validation error", "model is required")
-		return
-	}
-	if req.Manufacturer == "" {
-		writeError(w, http.StatusBadRequest, "validation error", "manufacturer is required")
-		return
+	if err := validateCreateAircraftV2Request(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "validation error", err.Error())
 	}
 
 	entity := mapCreateRequestToAircraftV2(req)
 	updated, ok := aircraftV2Store.Update(id, entity)
-	if !ok {
+	if ok == false {
 		writeError(w, http.StatusNotFound, "aircraft not found", "")
 		return
 	}
@@ -452,6 +444,117 @@ func deleteAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func isValidAircraftStatus(v AircraftStatus) bool {
+	switch v {
+	case StatusActive, StatusMaintenance, StatusRetired, StatusStored:
+		return true
+	default:
+		return false
+	}
+}
+
+func isValidAircraftRole(v AircraftRole) bool {
+	switch v {
+	case RoleFighter, RoleBomber, RoleTransport, RoleTrainer, RoleDrone, RoleReconnaissance:
+		return true
+	default:
+		return false
+	}
+}
+
+func validateCreateAircraftV2Request(req *CreateAircraftV2Request) error {
+	req.Model = strings.TrimSpace(req.Model)
+	req.Manufacturer = strings.TrimSpace(req.Manufacturer)
+
+	if strings.TrimSpace(req.Model) == "" {
+		return fmt.Errorf("model is required")
+	}
+
+	if len(req.Model) > 80 {
+		return fmt.Errorf("model must be <= 80 chars")
+	}
+
+	if req.Manufacturer == "" {
+		return fmt.Errorf("manufacturer is required")
+	}
+	if len(req.Manufacturer) > 80 {
+		return fmt.Errorf("manufacturer must be <= 80 chars")
+	}
+
+	currentYear := time.Now().Year()
+	if req.YearOfManufacture < 1903 || req.YearOfManufacture > currentYear+1 {
+		return fmt.Errorf("year_of_manufacture must be between 1903 and %d", currentYear+1)
+	}
+
+	if isValidAircraftStatus(req.Status) == false {
+		return fmt.Errorf("invalid status")
+	}
+	if isValidAircraftRole(req.Role) == false {
+		return fmt.Errorf("invalid role")
+	}
+
+	if req.EmptyWeightKg <= 0 {
+		return fmt.Errorf("empty_weight_kg must be > 0")
+	}
+
+	if req.Specs.MaxSpeedKmh <= 0 {
+		return fmt.Errorf("specs.max_speed_kmh must be > 0")
+	}
+	if req.Specs.WingspanMeters <= 0 {
+		return fmt.Errorf("specs.wingspan_meters must be > 0")
+	}
+	if req.Specs.RangeKm <= 0 {
+		return fmt.Errorf("specs.range_km must be > 0")
+	}
+	if req.Specs.MaxAltitudeMeters != nil && *req.Specs.MaxAltitudeMeters <= 0 {
+		return fmt.Errorf("specs.max_altitude_meters must be > 0 when provided")
+	}
+	if req.Specs.FlightEndurance <= 0 {
+		return fmt.Errorf("specs.flight_endurance must be > 0")
+	}
+
+	normalizedTags, err := normalizeTags(req.Tags)
+	if err != nil {
+		return err
+	}
+	req.Tags = normalizedTags
+
+	return nil
+}
+
+func normalizeTags(tags []string) ([]string, error) {
+	if len(tags) == 0 {
+		return []string{}, nil
+	}
+
+	seen := make(map[string]struct{})
+	result := make([]string, 0, len(tags))
+
+	for _, t := range tags {
+		trimmed := strings.TrimSpace(t)
+		if trimmed == "" {
+			continue
+		}
+		if len(trimmed) > 24 {
+			return nil, fmt.Errorf("tag '%s' exceeds 24 chars", trimmed)
+		}
+
+		key := strings.ToLower(trimmed)
+		if _, exists := seen[key]; exists {
+			continue
+		}
+
+		seen[key] = struct{}{}
+		result = append(result, trimmed)
+	}
+
+	if len(result) > 10 {
+		return nil, fmt.Errorf("tags cannot exceed 10 items")
+	}
+
+	return result, nil
 }
 
 func main() {
