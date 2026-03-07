@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -60,20 +61,217 @@ type ConflictHistory struct {
 	EndYear   int    `json:"end_year"`
 }
 
-var aircrafts = []Aircraft{
+type ErrorResponse struct {
+	Error   string `json:"error"`
+	Details string `json:"details,omitempty"`
+}
+
+type AircraftV2 struct {
+	ID                     uuid.UUID         `json:"id"`
+	Model                  string            `json:"model"`
+	Manufacturer           string            `json:"manufacturer"`
+	SerialNumber           *string           `json:"serial_number"`
+	YearOfManufacture      int               `json:"year_of_manufacture"`
+	PriceMillions          decimal.Decimal   `json:"price_millions"`
+	EmptyWeightKg          float64           `json:"empty_weight_kg"`
+	Status                 AircraftStatus    `json:"status"`
+	Role                   AircraftRole      `json:"role"`
+	Tags                   []string          `json:"tags"`
+	FirstFlightDate        time.Time         `json:"first_flight_date"`
+	LastMaintenanceTime    time.Time         `json:"last_maintenance_time"`
+	BaseLocation           GeoLocation       `json:"base_location"`
+	Specs                  AircraftSpecs     `json:"specs"`
+	Conflicts              []ConflictHistory `json:"conflicts"`
+	Metadata               map[string]string `json:"metadata"`
+	EstimatedUnitsProduced *int              `json:"estimated_units_produced"`
+	EstimatedActiveUnits   *int              `json:"estimated_active_units"`
+	PhotoUrl               *string           `json:"photo_url"`
+	ManualArchive          []byte            `json:"manual_archive"`
+}
+
+type CreateAircraftV2Request struct {
+	Model                  string            `json:"model"`
+	Manufacturer           string            `json:"manufacturer"`
+	SerialNumber           *string           `json:"serial_number"`
+	YearOfManufacture      int               `json:"year_of_manufacture"`
+	PriceMillions          decimal.Decimal   `json:"price_millions"`
+	EmptyWeightKg          float64           `json:"empty_weight_kg"`
+	Status                 AircraftStatus    `json:"status"`
+	Role                   AircraftRole      `json:"role"`
+	Tags                   []string          `json:"tags"`
+	FirstFlightDate        time.Time         `json:"first_flight_date"`
+	LastMaintenanceTime    time.Time         `json:"last_maintenance_time"`
+	BaseLocation           GeoLocation       `json:"base_location"`
+	Specs                  AircraftSpecs     `json:"specs"`
+	Conflicts              []ConflictHistory `json:"conflicts"`
+	Metadata               map[string]string `json:"metadata"`
+	EstimatedUnitsProduced *int              `json:"estimated_units_produced"`
+	EstimatedActiveUnits   *int              `json:"estimated_active_units"`
+	PhotoUrl               *string           `json:"photo_url"`
+	ManualArchive          []byte            `json:"manual_archive"`
+}
+
+// var aircrafts = []Aircraft{
+// 	{
+// 		ID:           1,
+// 		Code:         "A320",
+// 		Manufacturer: "Airbus",
+// 	},
+// 	{
+// 		ID:           2,
+// 		Code:         "B737",
+// 		Manufacturer: "Boeing",
+// 	},
+// }
+
+var aircrafts = []AircraftV2{
 	{
 		ID:           1,
-		Code:         "A320",
+		Model:        "A320",
 		Manufacturer: "Airbus",
-	},
-	{
-		ID:           2,
-		Code:         "B737",
-		Manufacturer: "Boeing",
 	},
 }
 
+func aircraftV2CollectionHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		listAircraftV2Handler(w, r)
+	case http.MethodPost:
+		writeError(w, http.StatusNotImplemented, "not implemented", "createAircraftV2Handler pending")
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func aircraftV2ItemHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		getAircraftV2ByIDHandler(w, r)
+	case http.MethodPut:
+		writeError(w, http.StatusNotImplemented, "not implemented", "updateAircraftV2Handler pending")
+	case http.MethodDelete:
+		writeError(w, http.StatusNotImplemented, "not implemented", "deleteAircraftV2Handler pending")
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func writeJSON(w http.ResponseWriter, status int, payload any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
+		log.Printf("failed to write json response: %v", err)
+	}
+}
+
+func writeError(w http.ResponseWriter, status int, message string, details string) {
+	resp := ErrorResponse{
+		Error:   message,
+		Details: details,
+	}
+	writeJSON(w, status, resp)
+}
+
+func decodeJSON(r *http.Request, dst any) error {
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	return decoder.Decode(dst)
+}
+
+func parseAircraftV2IDFromPath(path string) (uuid.UUID, error) {
+	const prefix = "/aircraft-v2/"
+	rawID := strings.TrimPrefix(path, prefix)
+	return uuid.Parse(rawID)
+}
+
+var aircraftV2Store = NewAircraftV2Store()
+
+type AircraftV2Store struct {
+	mu   sync.RWMutex
+	data map[uuid.UUID]AircraftV2
+}
+
+func NewAircraftV2Store() *AircraftV2Store {
+	return &AircraftV2Store{
+		data: make(map[uuid.UUID]AircraftV2),
+	}
+}
+
+func (s *AircraftV2Store) List() []AircraftV2 {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	result := make([]AircraftV2, 0, len(s.data))
+	for aircraft := range s.data {
+		result = append(result, aircraft)
+	}
+	return result
+}
+
+func (s *AircraftV2Store) Get(id uuid.UUID) (AircraftV2, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	aircraft, ok := s.data[id]
+	return aircraft, ok
+}
+
+func (s *AircraftV2Store) Create(aircraft AircraftV2) AircraftV2 {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.data[aircraft.ID] = aircraft
+	return aircraft
+}
+
+func (s *AircraftV2Store) Update(id uuid.UUID, aircraft AircraftV2) (AircraftV2, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, exists := s.data[id]; !exists {
+		return AircraftV2{}, false
+	}
+
+	aircraft.ID = id
+	s.data[id] = aircraft
+	return aircraft, true
+}
+
+func (s *AircraftV2Store) Delete(id uuid.UUID) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, exists := s.data[id]; !exists {
+		return false
+	}
+
+	delete(s.data, id)
+	return true
+}
+
 var nextAircraftId = 3
+
+func listAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
+	items := aircraftV2Store.List()
+	writeJSON(w, http.StatusOK, items)
+}
+
+func getAircraftV2ByIDHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := parseAircraftV2IDFromPath(r.URL.Path)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid id", err.Error())
+		return
+	}
+
+	item, ok := aircraftV2Store.Get(id)
+	if !ok {
+		writeError(w, http.StatusNotFound, "aircraft not found", "")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, item)
+}
 
 func aircraftHandler(writer http.ResponseWriter, request *http.Request) {
 	switch request.Method {
@@ -124,9 +322,9 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	newAircraft := Aircraft{
+	newAircraft := AircraftV2{
 		ID:           nextAircraftId,
-		Code:         createRequest.Code,
+		Model:        createRequest.Code,
 		Manufacturer: createRequest.Manufacturer,
 	}
 
@@ -161,6 +359,9 @@ func main() {
 	//fmt.Println("Hello, World!")
 	http.HandleFunc("/decolamos", decolamosHandler)
 	http.HandleFunc("/aircraft", aircraftHandler)
+
+	http.HandleFunc("/aircraft-v2", aircraftV2CollectionHandler) // GET, POST
+	http.HandleFunc("/aircraft-v2/", aircraftV2ItemHandler)      // GET, PUT, DELETE com id
 
 	log.Println("server running on :8080")
 
