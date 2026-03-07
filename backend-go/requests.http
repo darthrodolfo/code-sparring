@@ -13,9 +13,9 @@ POST http://localhost:8080/aircraft
 Content-Type: application/json
 
 {
-  "model": "F-16C",
+  "code": "F-16C",
   "manufacturer": "Lockheed Martin",
-  "year": 1991
+  "year": 1991 
 }
 
 ###
@@ -25,7 +25,7 @@ POST http://localhost:8080/aircraft
 Content-Type: application/json
 
 {
-  "model": "Ancient",
+  "code": "Ancient",
   "manufacturer": "Wright Brothers",
   "year": 1880
 }
