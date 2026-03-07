@@ -1,9 +1,11 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/mattn/go-sqlite3"
 	"github.com/shopspring/decimal"
 	"log"
 	"net/http"
@@ -12,10 +14,14 @@ import (
 	"time"
 )
 
+var db *sql.DB
+
+var aircraftV2Store = NewAircraftV2Store()
+
 type Aircraft struct {
-	ID           int    `json:"id"`
-	Code         string `json:"code"`
-	Manufacturer string `json:"manufacturer"`
+	ID           uuid.UUID `json:"id"`
+	Code         string    `json:"code"`
+	Manufacturer string    `json:"manufacturer"`
 }
 
 type CreateAircraftRequest struct {
@@ -112,27 +118,6 @@ type CreateAircraftV2Request struct {
 	ManualArchive          []byte            `json:"manual_archive"`
 }
 
-// var aircrafts = []Aircraft{
-// 	{
-// 		ID:           1,
-// 		Code:         "A320",
-// 		Manufacturer: "Airbus",
-// 	},
-// 	{
-// 		ID:           2,
-// 		Code:         "B737",
-// 		Manufacturer: "Boeing",
-// 	},
-// }
-
-var aircrafts = []AircraftV2{
-	{
-		ID:           1,
-		Model:        "A320",
-		Manufacturer: "Airbus",
-	},
-}
-
 func aircraftV2CollectionHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -186,8 +171,6 @@ func parseAircraftV2IDFromPath(path string) (uuid.UUID, error) {
 	return uuid.Parse(rawID)
 }
 
-var aircraftV2Store = NewAircraftV2Store()
-
 type AircraftV2Store struct {
 	mu   sync.RWMutex
 	data map[uuid.UUID]AircraftV2
@@ -204,7 +187,7 @@ func (s *AircraftV2Store) List() []AircraftV2 {
 	defer s.mu.RUnlock()
 
 	result := make([]AircraftV2, 0, len(s.data))
-	for aircraft := range s.data {
+	for _, aircraft := range s.data {
 		result = append(result, aircraft)
 	}
 	return result
@@ -250,8 +233,6 @@ func (s *AircraftV2Store) Delete(id uuid.UUID) bool {
 	delete(s.data, id)
 	return true
 }
-
-var nextAircraftId = 3
 
 func listAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
 	items := aircraftV2Store.List()
@@ -321,13 +302,12 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	newAircraft := AircraftV2{
-		ID:           nextAircraftId,
+		ID:           uuid.New(),
 		Model:        createRequest.Code,
 		Manufacturer: createRequest.Manufacturer,
 	}
 
 	aircrafts = append(aircrafts, newAircraft)
-	nextAircraftId++
 
 	writer.WriteHeader(http.StatusCreated)
 
@@ -557,7 +537,90 @@ func normalizeTags(tags []string) ([]string, error) {
 	return result, nil
 }
 
+func initSQLite(dataSource string) (*sql.DB, error) {
+	database, err := sql.Open("sqlite3", dataSource)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := database.Exec(`PRAGMA foreign_keys = ON;`); err != nil {
+		_ = database.Close()
+		return nil, err
+	}
+
+	schema := `
+	CREATE TABLE IF NOT EXISTS aircraft_v2 (
+    id TEXT PRIMARY KEY,
+    model TEXT NOT NULL,
+    manufacturer TEXT NOT NULL,
+    serial_number TEXT,
+    year_of_manufacture INTEGER NOT NULL,
+    price_millions TEXT NOT NULL,
+    empty_weight_kg REAL NOT NULL,
+    status TEXT NOT NULL,
+    role TEXT NOT NULL,
+    first_flight_date TEXT NOT NULL,
+    last_maintenance_time TEXT NOT NULL,
+    base_latitude REAL NOT NULL,
+    base_longitude REAL NOT NULL,
+    max_speed_kmh INTEGER NOT NULL,
+    wingspan_meters REAL NOT NULL,
+    range_km INTEGER NOT NULL,
+    max_altitude_meters INTEGER,
+    flight_endurance TEXT NOT NULL,
+    metadata TEXT NOT NULL,
+    estimated_units_produced INTEGER,
+    estimated_active_units INTEGER,
+    photo_url TEXT,
+    manual_archive BLOB
+);
+
+CREATE TABLE IF NOT EXISTS aircraft_tags (
+    aircraft_id TEXT NOT NULL,
+    tag TEXT NOT NULL,
+    PRIMARY KEY (aircraft_id, tag),
+    FOREIGN KEY (aircraft_id) REFERENCES aircraft_v2(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS aircraft_conflicts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    aircraft_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    start_year INTEGER NOT NULL,
+    end_year INTEGER NOT NULL,
+    FOREIGN KEY (aircraft_id) REFERENCES aircraft_v2(id) ON DELETE CASCADE
+);
+`
+	if _, err := database.Exec(schema); err != nil {
+		_ = database.Close()
+		return nil, err
+	}
+
+	return database, nil
+}
+
+var aircrafts = []AircraftV2{
+	{
+		ID:           uuid.New(),
+		Model:        "A320",
+		Manufacturer: "Airbus",
+	},
+	{
+		ID:           uuid.New(),
+		Model:        "B737",
+		Manufacturer: "Boeing",
+	},
+}
+
 func main() {
+
+	var err error
+	db, err = initSQLite("aerostack.db")
+	if err != nil {
+		log.Fatalf("failed to init sqlite: %v", err)
+	}
+	defer db.Close()
+
 	http.HandleFunc("/decolamos", decolamosHandler)
 	http.HandleFunc("/aircraft", aircraftHandler)
 
@@ -566,8 +629,8 @@ func main() {
 
 	log.Println("server running on :8080")
 
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		log.Fatalf("failed to start server: %v", err)
+	httpErr := http.ListenAndServe(":8080", nil)
+	if httpErr != nil {
+		log.Fatalf("failed to start server: %v", httpErr)
 	}
 }
