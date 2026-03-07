@@ -15,11 +15,13 @@ Treats each stack as a "game" to play in parallel. Fast learner with strong tran
 - **No stringly-typed design.** Enums over bool flags, proper types over strings.
 - **Phase 0-1 in ALL stacks before asymmetric advancement** in any single one.
 - After Phase 0-1 baseline: free navigation across stacks and phases.
+- **Didactic-first cross-stack:** whenever new syntax/idiom appears in any language, explain it briefly before or with the snippet. Do not wait for the user to get blocked.
+- **Contrastive mentoring:** always call out mental-model differences against the user's strongest prior stack when relevant.
 
 ## Current State (update as progress is made)
-- **C# (.NET 9):** Phase 0.5 COMPLETE, Round 1 IN PROGRESS (ConcurrentDictionary storage added, CRUD endpoints next, then SQLite)
-- **Go:** Not started
-- **Python:** Not started
+- **C# (.NET 9):** Phase 0.5 COMPLETE, Round 1 COMPLETE with SQLite
+- **Go:** Phase 0 + 0.5 COMPLETE, Round 1 CRUD in progress, SQLite integration in progress
+- **Python:** Phase 0 + 0.5 + Round 1 COMPLETE with SQLite
 - **Node.js:** Not started
 
 ## Tech Stack Details
@@ -34,6 +36,7 @@ Treats each stack as a "game" to play in parallel. Fast learner with strong tran
 - `docs/tech-setup-implementation/implementation_plan.md` — AircraftV2 entity plan + navigation model
 - `docs/tech-docs/requests.http` — HTTP test requests (versionable, REST Client compatible)
 - `docs/roadmap-linguagem-zero-ao-avancado.md` — Generic language learning roadmap (phases 1-5)
+- `backend-go/docs/GO_LOOPS_QUICK_REF.md` — Go loop/range quick reference for C#-to-Go transition
 
 ## Conventions
 - `requests.http` file in each stack's folder or shared in docs/tech-docs/

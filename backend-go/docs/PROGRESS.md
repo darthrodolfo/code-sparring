@@ -2,7 +2,7 @@
 
 ## Current Status
 
-**Phase 0.5 COMPLETE** — Ready for Round 1 CRUD implementation.
+**Phase 0.5 COMPLETE** — Round 1 CRUD implementation in progress, moving to SQLite integration.
 
 ---
 
@@ -101,6 +101,19 @@ Use `database/sql` with SQLite driver (`github.com/mattn/go-sqlite3`):
 
 ---
 
+## Mentoring Guardrails (Go)
+
+- Explain new Go syntax as soon as it appears in snippets:
+  - `for range` semantics by collection type
+  - `_` discard identifier
+  - pointer/address operator `&`
+  - short declaration `:=`
+  - `if init; condition` form
+- Keep explanations short and practical, with C# analogies when useful.
+- Reference: `docs/GO_LOOPS_QUICK_REF.md` for loop/range quick lookup.
+
+---
+
 ## Testing
 
 Use `requests.http` in VS Code (REST Client extension):
@@ -129,6 +142,7 @@ Content-Type: application/json
 - `requests.http` — API test cases
 - `docs/README.md` — User-facing guide
 - `docs/PROGRESS.md` — This file
+- `docs/GO_LOOPS_QUICK_REF.md` — Loop/range cheat sheet
 
 ---
 

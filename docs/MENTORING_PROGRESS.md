@@ -62,7 +62,9 @@ Later:
 - POST /aircraft-v2 — 201 Created + Location header
 - GET /aircraft-v2 — list all
 - Verified: uuid.UUID, decimal.Decimal, time.Time (RFC3339), time.Duration (nanoseconds), []byte (Base64)
-- Next: Round 1 CRUD (GET by id, PUT, DELETE) + SQLite persistence
+- Round 1 status: CRUD endpoints and validation centralization in progress
+- Round 2 status: SQLite integration started (must follow C# schema parity)
+- Learning support: Go syntax quick ref created at `backend-go/docs/GO_LOOPS_QUICK_REF.md`
 
 ### Next: Checkpoint Actions
 - Open Node.js Phase 0 (final baseline stack)
@@ -172,6 +174,11 @@ Start after Round 4:
 ## 📝 Next Action
 Complete Round 1 CRUD endpoints with ConcurrentDictionary storage, then add SQLite persistence.
 After C# checkpoint is solid, open Phase 0-1 in next stack (Go, Python, or Node).
+
+## Mentoring Protocol Update (Cross-Stack)
+- During implementation, explain new language syntax immediately when first used.
+- For any active stack, pre-explain core syntax/idioms that commonly block flow (iteration semantics, variable declaration, reference/pointer behavior, scoping, and error handling style).
+- Keep explanations concise and tied to current code block to avoid context-switch friction.
 
 # 🥊 AeroStack Lab — IDE AI Context Pack (Phase 0: Lift-off)
 

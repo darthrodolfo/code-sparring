@@ -39,6 +39,11 @@ Cada pasta com um `README.md` curto explicando:
 - Interfaces / traits / protocolos
 - Generics
 
+### Regra de mentoria para Fase 1
+- Sempre que surgir sintaxe nova da linguagem, explicar no ato em 2-5 linhas com exemplo minimo.
+- Nao esperar o aluno travar para explicar semantica basica de loops, atribuicao, ponteiros/referencias, escopo e tratamento de erro.
+- Em qualquer transicao de stack, explicitar diferencas de modelo mental entre a linguagem anterior e a atual.
+
 ---
 
 ## Fase 2 — A Linguagem Sendo Ela Mesma
