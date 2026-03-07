@@ -53,18 +53,24 @@ Later:
 - Verified: Decimal as string, date as ISO 8601, datetime as UTC, timedelta as PT format, bytes as Base64, null explicit
 - requests.http with full payload + nullable fields + PUT/DELETE test cases
 
-### Go (stdlib) — Phase 0 COMPLETE, Phase 0.5 COMPLETE
+### Go (stdlib) — Phase 0 COMPLETE, Phase 0.5 COMPLETE, Round 1 COMPLETE
 - net/http stdlib (no framework)
 - GET /decolamos, GET /aircraft, POST /aircraft with validation
 - Enums: AircraftRole, AircraftStatus (type alias + const pattern)
 - Nested structs: GeoLocation, AircraftSpecs (with *int nullable), ConflictHistory
 - AircraftV2 struct: 20 fields, UUID + Decimal external types
-- POST /aircraft-v2 — 201 Created + Location header
-- GET /aircraft-v2 — list all
+- **Round 1 CRUD Complete:**
+  - GET /aircraft-v2 — list all with nested tags/conflicts
+  - GET /aircraft-v2/{id} — fetch single aircraft by UUID
+  - POST /aircraft-v2 — 201 Created + Location header + transactions
+  - PUT /aircraft-v2/{id} — update with validation + transactions
+  - DELETE /aircraft-v2/{id} — delete with CASCADE cleanup
+- **SQLite persistence:**
+  - 3-table schema (aircraft_v2, aircraft_tags, aircraft_conflicts)
+  - Foreign keys with ON DELETE CASCADE
+  - Transactions (BeginTx/Commit/Rollback) on all writes
+  - Tag normalization + full validation
 - Verified: uuid.UUID, decimal.Decimal, time.Time (RFC3339), time.Duration (nanoseconds), []byte (Base64)
-- Round 1 status: CRUD endpoints and validation centralization in progress
-- Round 2 status: SQLite integration started (must follow C# schema parity)
-- Learning support: Go syntax quick ref created at `backend-go/docs/GO_LOOPS_QUICK_REF.md`
 
 ### Next: Checkpoint Actions
 - Open Node.js Phase 0 (final baseline stack)

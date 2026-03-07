@@ -2,7 +2,7 @@
 
 ## Current Status
 
-**Phase 0.5 COMPLETE** — Round 1 CRUD implementation in progress, moving to SQLite integration.
+**Phase 0.5 + Round 1 COMPLETE** — Full CRUD with SQLite persistence.
 
 ---
 

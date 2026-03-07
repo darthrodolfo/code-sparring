@@ -98,10 +98,23 @@ Key pattern: `http.HandleFunc` with manual method routing inside the handler.
 - `[]byte` → JSON string (Base64 encoded)
 - Null handling: `nil` pointers → `null` in JSON
 
-## Next Phases
-- **Round 1:** Full CRUD (GET by id, PUT, DELETE) + in-memory storage
-- **Round 2:** SQLite persistence
-- **Round 3+:** Gin framework, more features
+## Round 1 — Full CRUD (COMPLETE)
+
+### Endpoints
+- **GET /aircraft-v2** — list all aircraft
+- **GET /aircraft-v2/{id}** — fetch by UUID
+- **POST /aircraft-v2** — create with validation
+- **PUT /aircraft-v2/{id}** — update with validation
+- **DELETE /aircraft-v2/{id}** — delete (cascades)
+
+### Storage
+- SQLite with 3 tables: aircraft_v2, aircraft_tags, aircraft_conflicts
+- Transactions on write operations
+- Foreign key constraints with CASCADE delete
+
+## Next Phases (Optional)
+- **Round 3:** Query features (filtering, pagination, sorting)
+- **Round 4+:** Caching, advanced concurrency, Gin framework migration
 
 ## Standards
 - Enum serialization: string-based type aliases (Go idiom)
