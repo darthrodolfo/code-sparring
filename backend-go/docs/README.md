@@ -79,13 +79,34 @@ func decolamosHandler(w http.ResponseWriter, r *http.Request) {
 
 Key pattern: `http.HandleFunc` with manual method routing inside the handler.
 
+## Phase 0.5 — Rich Entity (COMPLETE)
+
+### AircraftV2 Struct
+- **20 fields** covering all major Go types
+- **Type aliases for enums:** `AircraftRole`, `AircraftStatus` (string-based, not `iota`)
+- **Nested structs:** `GeoLocation`, `AircraftSpecs` (with `*int` nullable field), `ConflictHistory`
+- **Pointers for nullable:** `*string`, `*int` (Go way of optional types)
+- **Collections:** `[]string` (tags), `[]ConflictHistory` (conflicts), `map[string]string` (metadata)
+- **Special types:** `uuid.UUID` (google/uuid), `decimal.Decimal` (shopspring/decimal), `time.Time`, `time.Duration`
+- **Endpoints:** `GET /aircraft-v2`, `POST /aircraft-v2` with full validation
+
+### Verified Serialization
+- `uuid.UUID` → JSON string (lowercase hyphenated)
+- `decimal.Decimal` → JSON string (preserves precision)
+- `time.Time` → JSON RFC3339 (ISO 8601 with timezone)
+- `time.Duration` → JSON number (nanoseconds)
+- `[]byte` → JSON string (Base64 encoded)
+- Null handling: `nil` pointers → `null` in JSON
+
 ## Next Phases
-- **Phase 0.5:** AircraftV2 (20 fields), enums, nested models
-- **Round 1:** CRUD endpoints, in-memory storage (encapsulated)
-- **Round 2+:** SQLite, Gin framework, etc.
+- **Round 1:** Full CRUD (GET by id, PUT, DELETE) + in-memory storage
+- **Round 2:** SQLite persistence
+- **Round 3+:** Gin framework, more features
 
 ## Standards
-- Enum serialization: string (native in Go)
-- UUID generation: `google.golang.org/uuid` or stdlib `crypto/rand`
+- Enum serialization: string-based type aliases (Go idiom)
+- UUID generation: `github.com/google/uuid`
+- Decimal: `github.com/shopspring/decimal`
 - Date/Time: `time.Time` (RFC3339 JSON)
-- Error handling: consistent, typed responses
+- Error handling: explicit `if err != nil`, JSON error responses
+- JSON tags: `snake_case` for consistency across all stacks

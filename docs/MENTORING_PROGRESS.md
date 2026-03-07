@@ -8,9 +8,9 @@
 
 ## ✅ North Star
 Build the same business capabilities across:
-- /backend-csharp (.NET 9 Minimal API) **CURRENT**
-- /backend-go (stdlib / Gin)
-- /backend-python (FastAPI / Pydantic v2)
+- /backend-csharp (.NET 9 Minimal API) **Phase 0.5 + Round 1 COMPLETE**
+- /backend-go (stdlib / Gin) **Phase 0 + 0.5 COMPLETE**
+- /backend-python (FastAPI / Pydantic v2) **Phase 0 + 0.5 + Round 1 COMPLETE**
 - /backend-nodejs (NestJS / Fastify)
 Later:
 - /frontend-nextjs (Next.js PWA)
@@ -53,8 +53,19 @@ Later:
 - Verified: Decimal as string, date as ISO 8601, datetime as UTC, timedelta as PT format, bytes as Base64, null explicit
 - requests.http with full payload + nullable fields + PUT/DELETE test cases
 
+### Go (stdlib) — Phase 0 COMPLETE, Phase 0.5 COMPLETE
+- net/http stdlib (no framework)
+- GET /decolamos, GET /aircraft, POST /aircraft with validation
+- Enums: AircraftRole, AircraftStatus (type alias + const pattern)
+- Nested structs: GeoLocation, AircraftSpecs (with *int nullable), ConflictHistory
+- AircraftV2 struct: 20 fields, UUID + Decimal external types
+- POST /aircraft-v2 — 201 Created + Location header
+- GET /aircraft-v2 — list all
+- Verified: uuid.UUID, decimal.Decimal, time.Time (RFC3339), time.Duration (nanoseconds), []byte (Base64)
+- Next: Round 1 CRUD (GET by id, PUT, DELETE) + SQLite persistence
+
 ### Next: Checkpoint Actions
-- Open Go Phase 0 (next stack baseline)
+- Open Node.js Phase 0 (final baseline stack)
 
 ---
 
