@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -34,7 +33,7 @@ var aircrafts = []Aircraft{
 
 var nextAircraftId = 3
 
-func aicraftHandler(writer http.ResponseWriter, request *http.Request) {
+func aircraftHandler(writer http.ResponseWriter, request *http.Request) {
 	switch request.Method {
 	case http.MethodGet:
 		getAircraftHandler(writer, request)
@@ -48,9 +47,9 @@ func aicraftHandler(writer http.ResponseWriter, request *http.Request) {
 func getAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 
-	error := json.NewEncoder(writer).Encode(aircrafts)
-	if error != nil {
-		log.Printf("failed to encode aircraft list: %v", error)
+	err := json.NewEncoder(writer).Encode(aircrafts)
+	if err != nil {
+		log.Printf("failed to encode aircraft list: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -61,9 +60,10 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 
 	var createRequest CreateAircraftRequest
 
-	error := json.NewDecoder(request.Body).Decode(&createRequest)
-	if error != nil {
-		http.Error(writer, `{"error": "invalid request body"}`, http.StatusBadRequest)
+	err := json.NewDecoder(request.Body).Decode(&createRequest)
+	if err != nil {
+		//http.Error(writer, `{"err": "invalid request body"}`, http.StatusBadRequest)
+		json.NewEncoder(writer).Encode(map[string]string{"err": "invalid request body"})
 		return
 	}
 
@@ -71,12 +71,14 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 	createRequest.Manufacturer = strings.TrimSpace(createRequest.Manufacturer)
 
 	if createRequest.Code == "" {
-		http.Error(writer, `{"error": "code is required"}`, http.StatusBadRequest)
+		//http.Error(writer, `{"err": "code is required"}`, http.StatusBadRequest)
+		json.NewEncoder(writer).Encode(map[string]string{"err": "code is required"})
 		return
 	}
 
 	if createRequest.Manufacturer == "" {
-		http.Error(writer, `{"error": "manufacturer is required"}`, http.StatusBadRequest)
+		//http.Error(writer, `{"err": "manufacturer is required"}`, http.StatusBadRequest)
+		json.NewEncoder(writer).Encode(map[string]string{"err": "manufacturer is required"})
 		return
 	}
 
@@ -91,9 +93,9 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 
 	writer.WriteHeader(http.StatusCreated)
 
-	error = json.NewEncoder(writer).Encode(newAircraft)
-	if error != nil {
-		log.Printf("failed to encode created aircraft: %v", error)
+	err = json.NewEncoder(writer).Encode(newAircraft)
+	if err != nil {
+		log.Printf("failed to encode created aircraft: %v", err)
 		writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -106,21 +108,22 @@ func decolamosHandler(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	_, error := fmt.Fprint(writer, "Decolamos")
-	if error != nil {
-		log.Printf("failed to write response: %v", error)
+	//_, err := fmt.Fprint(writer, "Decolamos")
+	err := json.NewEncoder(writer).Encode(map[string]string{"message": "Decolamos"})
+	if err != nil {
+		log.Printf("failed to write response: %v", err)
 	}
 }
 
 func main() {
 	//fmt.Println("Hello, World!")
 	http.HandleFunc("/decolamos", decolamosHandler)
-	http.HandleFunc("/aircraft", aicraftHandler)
+	http.HandleFunc("/aircraft", aircraftHandler)
 
 	log.Println("server running on :8080")
 
-	error := http.ListenAndServe(":8080", nil)
-	if error != nil {
-		log.Fatalf("failed to start server: %v", error)
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatalf("failed to start server: %v", err)
 	}
 }
