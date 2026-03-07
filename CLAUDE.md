@@ -62,14 +62,19 @@ The backend safari is a controlled sequence of implementations of the **same dom
 1. **C# / .NET**
 2. **Python**
 3. **Go**
-4. **Node.js / NestJS**
-5. **Node.js / Fastify**
+4. **Node.js / NestJS + Express**
+5. **Node.js puro + Fastify**
 6. **Java / Spring Boot**
 7. **Dart backend**
 8. Return to **C# / .NET** for the premium final backend
 
 ### Important note
 If a future chat mentions **Node.js / Next.js** in backend context, clarify whether the real target is **NestJS**. In this project, the intended backend stack is **NestJS**, not Next.js, unless the user explicitly changes direction.
+
+For Node exploration, preserve learning contrast:
+- `NestJS + Express` is the framework-heavy, opinionated path.
+- `Node puro + Fastify` is the lower-level, lighter-weight path.
+- Do not suggest `NestJS + Express` and `NestJS + Fastify` as separate safari stacks unless the user explicitly wants an HTTP-adapter comparison.
 
 ---
 
@@ -148,6 +153,7 @@ This final project becomes the strongest showcase repo.
 - Call out mental-model differences vs **C# / .NET** when useful.
 - Prefer pragmatic progress over framework tourism.
 - Do not bloat a stack beyond the agreed stop point.
+- Before suggesting alternative stack variants, evaluate the pedagogical contrast. Avoid near-duplicate projects that mostly swap infrastructure while teaching the same mental model.
 
 ---
 
@@ -198,7 +204,8 @@ This is a feature, not accidental complexity.
 - **Python:** Phase 0 + 0.5 + Round 1 complete with SQLite
 - **Go:** Phase 0 + 0.5 complete, CRUD + SQLite explored; strong feedback captured about verbosity and DX vs .NET/Python
 - **Node.js / NestJS:** next likely target
-- **Node.js / Fastify:** planned after NestJS
+- **Node.js / NestJS + Express:** next likely target
+- **Node.js puro + Fastify:** planned after NestJS
 - **Java / Spring Boot:** planned
 - **Dart backend:** planned
 
@@ -247,7 +254,7 @@ Current backend technologies discussed or planned in this code-sparring project:
 - **Python backend**
 - **Go (stdlib first)**
 - **Node.js / NestJS**
-- **Node.js / Fastify**
+- **Node.js puro + Fastify**
 - **Java / Spring Boot**
 - **Dart backend**
 
@@ -343,5 +350,4 @@ This project is a **polyglot backend safari with a fixed rich domain**.
 Each stack should go from **zero → CRUD → SQLite**, then stop.
 The purpose is to learn language fundamentals and real backend ergonomics under comparable pressure.
 After that, return to **C# / .NET** and build the premium flagship backend with AI integrations.
-
 
