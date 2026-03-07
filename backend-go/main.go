@@ -1,22 +1,20 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/shopspring/decimal"
 	"log"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
 )
 
 var db *sql.DB
-
-var aircraftV2Store = NewAircraftV2Store()
 
 type Aircraft struct {
 	ID           uuid.UUID `json:"id"`
@@ -168,74 +166,18 @@ func decodeJSON(r *http.Request, dst any) error {
 func parseAircraftV2IDFromPath(path string) (uuid.UUID, error) {
 	const prefix = "/aircraft-v2/"
 	rawID := strings.TrimPrefix(path, prefix)
+	if rawID == "" || rawID == path {
+		return uuid.Nil, fmt.Errorf("missing aircraft id in path")
+	}
 	return uuid.Parse(rawID)
 }
 
-type AircraftV2Store struct {
-	mu   sync.RWMutex
-	data map[uuid.UUID]AircraftV2
-}
-
-func NewAircraftV2Store() *AircraftV2Store {
-	return &AircraftV2Store{
-		data: make(map[uuid.UUID]AircraftV2),
-	}
-}
-
-func (s *AircraftV2Store) List() []AircraftV2 {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	result := make([]AircraftV2, 0, len(s.data))
-	for _, aircraft := range s.data {
-		result = append(result, aircraft)
-	}
-	return result
-}
-
-func (s *AircraftV2Store) Get(id uuid.UUID) (AircraftV2, bool) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	aircraft, ok := s.data[id]
-	return aircraft, ok
-}
-
-func (s *AircraftV2Store) Create(aircraft AircraftV2) AircraftV2 {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	s.data[aircraft.ID] = aircraft
-	return aircraft
-}
-
-func (s *AircraftV2Store) Update(id uuid.UUID, aircraft AircraftV2) (AircraftV2, bool) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if _, exists := s.data[id]; !exists {
-		return AircraftV2{}, false
-	}
-
-	aircraft.ID = id
-	s.data[id] = aircraft
-	return aircraft, true
-}
-
-func (s *AircraftV2Store) Delete(id uuid.UUID) bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if _, exists := s.data[id]; !exists {
-		return false
-	}
-
-	delete(s.data, id)
-	return true
-}
-
 func listAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
-	items := aircraftV2Store.List()
+	items, err := listAircraftV2FromDB(r.Context())
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to list aircraft", err.Error())
+		return
+	}
 	writeJSON(w, http.StatusOK, items)
 }
 
@@ -246,7 +188,11 @@ func getAircraftV2ByIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	item, ok := aircraftV2Store.Get(id)
+	item, ok, err := getAircraftV2ByIDFromDB(r.Context(), id)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to fetch aircraft", err.Error())
+		return
+	}
 	if !ok {
 		writeError(w, http.StatusNotFound, "aircraft not found", "")
 		return
@@ -301,9 +247,9 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	newAircraft := AircraftV2{
+	newAircraft := Aircraft{
 		ID:           uuid.New(),
-		Model:        createRequest.Code,
+		Code:         createRequest.Code,
 		Manufacturer: createRequest.Manufacturer,
 	}
 
@@ -358,13 +304,17 @@ func createAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
 
 	if err := validateCreateAircraftV2Request(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "validation error", err.Error())
+		return
 	}
 
 	entity := mapCreateRequestToAircraftV2(req)
-	created := aircraftV2Store.Create(entity)
+	if err := createAircraftV2InDB(r.Context(), entity); err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to create aircraft", err.Error())
+		return
+	}
 
-	w.Header().Set("Location", "/aircraft-v2/"+created.ID.String())
-	writeJSON(w, http.StatusCreated, created)
+	w.Header().Set("Location", "/aircraft-v2/"+entity.ID.String())
+	writeJSON(w, http.StatusCreated, entity)
 }
 
 func decolamosHandler(writer http.ResponseWriter, request *http.Request) {
@@ -398,11 +348,16 @@ func updateAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
 
 	if err := validateCreateAircraftV2Request(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "validation error", err.Error())
+		return
 	}
 
 	entity := mapCreateRequestToAircraftV2(req)
-	updated, ok := aircraftV2Store.Update(id, entity)
-	if ok == false {
+	updated, ok, err := updateAircraftV2InDB(r.Context(), id, entity)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to update aircraft", err.Error())
+		return
+	}
+	if !ok {
 		writeError(w, http.StatusNotFound, "aircraft not found", "")
 		return
 	}
@@ -417,7 +372,11 @@ func deleteAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok := aircraftV2Store.Delete(id)
+	ok, err := deleteAircraftV2InDB(r.Context(), id)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to delete aircraft", err.Error())
+		return
+	}
 	if !ok {
 		writeError(w, http.StatusNotFound, "aircraft not found", "")
 		return
@@ -599,15 +558,453 @@ CREATE TABLE IF NOT EXISTS aircraft_conflicts (
 	return database, nil
 }
 
-var aircrafts = []AircraftV2{
+func listAircraftV2FromDB(ctx context.Context) ([]AircraftV2, error) {
+	rows, err := db.QueryContext(ctx, `
+SELECT id, model, manufacturer, serial_number, year_of_manufacture, price_millions, empty_weight_kg,
+       status, role, first_flight_date, last_maintenance_time, base_latitude, base_longitude,
+       max_speed_kmh, wingspan_meters, range_km, max_altitude_meters, flight_endurance,
+       metadata, estimated_units_produced, estimated_active_units, photo_url, manual_archive
+FROM aircraft_v2`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]AircraftV2, 0)
+	for rows.Next() {
+		aircraft, err := scanAircraftV2Row(rows)
+		if err != nil {
+			return nil, err
+		}
+		aircraft.Tags, err = getTagsByAircraftID(ctx, aircraft.ID)
+		if err != nil {
+			return nil, err
+		}
+		aircraft.Conflicts, err = getConflictsByAircraftID(ctx, aircraft.ID)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, aircraft)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func getAircraftV2ByIDFromDB(ctx context.Context, id uuid.UUID) (AircraftV2, bool, error) {
+	row := db.QueryRowContext(ctx, `
+SELECT id, model, manufacturer, serial_number, year_of_manufacture, price_millions, empty_weight_kg,
+       status, role, first_flight_date, last_maintenance_time, base_latitude, base_longitude,
+       max_speed_kmh, wingspan_meters, range_km, max_altitude_meters, flight_endurance,
+       metadata, estimated_units_produced, estimated_active_units, photo_url, manual_archive
+FROM aircraft_v2 WHERE id = ?`, id.String())
+
+	aircraft, err := scanAircraftV2Row(row)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return AircraftV2{}, false, nil
+		}
+		return AircraftV2{}, false, err
+	}
+
+	aircraft.Tags, err = getTagsByAircraftID(ctx, id)
+	if err != nil {
+		return AircraftV2{}, false, err
+	}
+	aircraft.Conflicts, err = getConflictsByAircraftID(ctx, id)
+	if err != nil {
+		return AircraftV2{}, false, err
+	}
+
+	return aircraft, true, nil
+}
+
+func createAircraftV2InDB(ctx context.Context, aircraft AircraftV2) error {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	metadataJSON, err := json.Marshal(aircraft.Metadata)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.ExecContext(ctx, `
+INSERT INTO aircraft_v2 (
+    id, model, manufacturer, serial_number, year_of_manufacture, price_millions, empty_weight_kg,
+    status, role, first_flight_date, last_maintenance_time, base_latitude, base_longitude,
+    max_speed_kmh, wingspan_meters, range_km, max_altitude_meters, flight_endurance, metadata,
+    estimated_units_produced, estimated_active_units, photo_url, manual_archive
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		aircraft.ID.String(),
+		aircraft.Model,
+		aircraft.Manufacturer,
+		aircraft.SerialNumber,
+		aircraft.YearOfManufacture,
+		aircraft.PriceMillions.String(),
+		aircraft.EmptyWeightKg,
+		string(aircraft.Status),
+		string(aircraft.Role),
+		aircraft.FirstFlightDate.Format(time.RFC3339),
+		aircraft.LastMaintenanceTime.Format(time.RFC3339),
+		aircraft.BaseLocation.Latitude,
+		aircraft.BaseLocation.Longitude,
+		aircraft.Specs.MaxSpeedKmh,
+		aircraft.Specs.WingspanMeters,
+		aircraft.Specs.RangeKm,
+		aircraft.Specs.MaxAltitudeMeters,
+		aircraft.Specs.FlightEndurance.String(),
+		string(metadataJSON),
+		aircraft.EstimatedUnitsProduced,
+		aircraft.EstimatedActiveUnits,
+		aircraft.PhotoUrl,
+		aircraft.ManualArchive,
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := replaceTagsTx(ctx, tx, aircraft.ID, aircraft.Tags); err != nil {
+		return err
+	}
+	if err := replaceConflictsTx(ctx, tx, aircraft.ID, aircraft.Conflicts); err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func updateAircraftV2InDB(ctx context.Context, id uuid.UUID, aircraft AircraftV2) (AircraftV2, bool, error) {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return AircraftV2{}, false, err
+	}
+	defer tx.Rollback()
+
+	metadataJSON, err := json.Marshal(aircraft.Metadata)
+	if err != nil {
+		return AircraftV2{}, false, err
+	}
+
+	result, err := tx.ExecContext(ctx, `
+UPDATE aircraft_v2 SET
+    model = ?, manufacturer = ?, serial_number = ?, year_of_manufacture = ?, price_millions = ?, empty_weight_kg = ?,
+    status = ?, role = ?, first_flight_date = ?, last_maintenance_time = ?, base_latitude = ?, base_longitude = ?,
+    max_speed_kmh = ?, wingspan_meters = ?, range_km = ?, max_altitude_meters = ?, flight_endurance = ?, metadata = ?,
+    estimated_units_produced = ?, estimated_active_units = ?, photo_url = ?, manual_archive = ?
+WHERE id = ?`,
+		aircraft.Model,
+		aircraft.Manufacturer,
+		aircraft.SerialNumber,
+		aircraft.YearOfManufacture,
+		aircraft.PriceMillions.String(),
+		aircraft.EmptyWeightKg,
+		string(aircraft.Status),
+		string(aircraft.Role),
+		aircraft.FirstFlightDate.Format(time.RFC3339),
+		aircraft.LastMaintenanceTime.Format(time.RFC3339),
+		aircraft.BaseLocation.Latitude,
+		aircraft.BaseLocation.Longitude,
+		aircraft.Specs.MaxSpeedKmh,
+		aircraft.Specs.WingspanMeters,
+		aircraft.Specs.RangeKm,
+		aircraft.Specs.MaxAltitudeMeters,
+		aircraft.Specs.FlightEndurance.String(),
+		string(metadataJSON),
+		aircraft.EstimatedUnitsProduced,
+		aircraft.EstimatedActiveUnits,
+		aircraft.PhotoUrl,
+		aircraft.ManualArchive,
+		id.String(),
+	)
+	if err != nil {
+		return AircraftV2{}, false, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return AircraftV2{}, false, err
+	}
+	if rowsAffected == 0 {
+		return AircraftV2{}, false, nil
+	}
+
+	if err := replaceTagsTx(ctx, tx, id, aircraft.Tags); err != nil {
+		return AircraftV2{}, false, err
+	}
+	if err := replaceConflictsTx(ctx, tx, id, aircraft.Conflicts); err != nil {
+		return AircraftV2{}, false, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return AircraftV2{}, false, err
+	}
+
+	aircraft.ID = id
+	return aircraft, true, nil
+}
+
+func deleteAircraftV2InDB(ctx context.Context, id uuid.UUID) (bool, error) {
+	result, err := db.ExecContext(ctx, `DELETE FROM aircraft_v2 WHERE id = ?`, id.String())
+	if err != nil {
+		return false, err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	return rowsAffected > 0, nil
+}
+
+func replaceTagsTx(ctx context.Context, tx *sql.Tx, aircraftID uuid.UUID, tags []string) error {
+	if _, err := tx.ExecContext(ctx, `DELETE FROM aircraft_tags WHERE aircraft_id = ?`, aircraftID.String()); err != nil {
+		return err
+	}
+	for _, tag := range tags {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO aircraft_tags (aircraft_id, tag) VALUES (?, ?)`, aircraftID.String(), tag); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func replaceConflictsTx(ctx context.Context, tx *sql.Tx, aircraftID uuid.UUID, conflicts []ConflictHistory) error {
+	if _, err := tx.ExecContext(ctx, `DELETE FROM aircraft_conflicts WHERE aircraft_id = ?`, aircraftID.String()); err != nil {
+		return err
+	}
+	for _, c := range conflicts {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO aircraft_conflicts (aircraft_id, name, start_year, end_year) VALUES (?, ?, ?, ?)`,
+			aircraftID.String(), c.Name, c.StartYear, c.EndYear); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func getTagsByAircraftID(ctx context.Context, id uuid.UUID) ([]string, error) {
+	rows, err := db.QueryContext(ctx, `SELECT tag FROM aircraft_tags WHERE aircraft_id = ?`, id.String())
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	tags := make([]string, 0)
+	for rows.Next() {
+		var tag string
+		if err := rows.Scan(&tag); err != nil {
+			return nil, err
+		}
+		tags = append(tags, tag)
+	}
+	return tags, rows.Err()
+}
+
+func getConflictsByAircraftID(ctx context.Context, id uuid.UUID) ([]ConflictHistory, error) {
+	rows, err := db.QueryContext(ctx, `SELECT name, start_year, end_year FROM aircraft_conflicts WHERE aircraft_id = ?`, id.String())
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	conflicts := make([]ConflictHistory, 0)
+	for rows.Next() {
+		var c ConflictHistory
+		if err := rows.Scan(&c.Name, &c.StartYear, &c.EndYear); err != nil {
+			return nil, err
+		}
+		conflicts = append(conflicts, c)
+	}
+	return conflicts, rows.Err()
+}
+
+type rowScanner interface {
+	Scan(dest ...any) error
+}
+
+func scanAircraftV2Row(scanner rowScanner) (AircraftV2, error) {
+	var (
+		idStr                  string
+		model                  string
+		manufacturer           string
+		serialNumber           sql.NullString
+		yearOfManufacture      int
+		priceMillionsStr       string
+		emptyWeightKg          float64
+		statusStr              string
+		roleStr                string
+		firstFlightRaw         string
+		lastMaintenanceRaw     string
+		baseLatitude           float64
+		baseLongitude          float64
+		maxSpeedKmh            int
+		wingspanMeters         float64
+		rangeKm                int
+		maxAltitudeMeters      sql.NullInt64
+		flightEnduranceRaw     string
+		metadataRaw            string
+		estimatedUnitsProduced sql.NullInt64
+		estimatedActiveUnits   sql.NullInt64
+		photoURL               sql.NullString
+		manualArchive          []byte
+	)
+
+	if err := scanner.Scan(
+		&idStr,
+		&model,
+		&manufacturer,
+		&serialNumber,
+		&yearOfManufacture,
+		&priceMillionsStr,
+		&emptyWeightKg,
+		&statusStr,
+		&roleStr,
+		&firstFlightRaw,
+		&lastMaintenanceRaw,
+		&baseLatitude,
+		&baseLongitude,
+		&maxSpeedKmh,
+		&wingspanMeters,
+		&rangeKm,
+		&maxAltitudeMeters,
+		&flightEnduranceRaw,
+		&metadataRaw,
+		&estimatedUnitsProduced,
+		&estimatedActiveUnits,
+		&photoURL,
+		&manualArchive,
+	); err != nil {
+		return AircraftV2{}, err
+	}
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		return AircraftV2{}, err
+	}
+	price, err := decimal.NewFromString(priceMillionsStr)
+	if err != nil {
+		return AircraftV2{}, err
+	}
+	firstFlight, err := parseFlexibleDateTime(firstFlightRaw)
+	if err != nil {
+		return AircraftV2{}, err
+	}
+	lastMaintenance, err := parseFlexibleDateTime(lastMaintenanceRaw)
+	if err != nil {
+		return AircraftV2{}, err
+	}
+	flightEndurance, err := parseFlexibleDuration(flightEnduranceRaw)
+	if err != nil {
+		return AircraftV2{}, err
+	}
+
+	metadata := map[string]string{}
+	if strings.TrimSpace(metadataRaw) != "" {
+		if err := json.Unmarshal([]byte(metadataRaw), &metadata); err != nil {
+			return AircraftV2{}, err
+		}
+	}
+
+	var serialNumberPtr *string
+	if serialNumber.Valid {
+		serialNumberValue := serialNumber.String
+		serialNumberPtr = &serialNumberValue
+	}
+
+	var maxAltitudePtr *int
+	if maxAltitudeMeters.Valid {
+		v := int(maxAltitudeMeters.Int64)
+		maxAltitudePtr = &v
+	}
+
+	var estimatedUnitsProducedPtr *int
+	if estimatedUnitsProduced.Valid {
+		v := int(estimatedUnitsProduced.Int64)
+		estimatedUnitsProducedPtr = &v
+	}
+
+	var estimatedActiveUnitsPtr *int
+	if estimatedActiveUnits.Valid {
+		v := int(estimatedActiveUnits.Int64)
+		estimatedActiveUnitsPtr = &v
+	}
+
+	var photoURLPtr *string
+	if photoURL.Valid {
+		v := photoURL.String
+		photoURLPtr = &v
+	}
+
+	return AircraftV2{
+		ID:           id,
+		Model:        model,
+		Manufacturer: manufacturer,
+		SerialNumber: serialNumberPtr,
+		YearOfManufacture: yearOfManufacture,
+		PriceMillions:     price,
+		EmptyWeightKg:     emptyWeightKg,
+		Status:            AircraftStatus(statusStr),
+		Role:              AircraftRole(roleStr),
+		Tags:              []string{},
+		FirstFlightDate:   firstFlight,
+		LastMaintenanceTime: lastMaintenance,
+		BaseLocation: GeoLocation{
+			Latitude:  baseLatitude,
+			Longitude: baseLongitude,
+		},
+		Specs: AircraftSpecs{
+			MaxSpeedKmh:       maxSpeedKmh,
+			WingspanMeters:    wingspanMeters,
+			RangeKm:           rangeKm,
+			MaxAltitudeMeters: maxAltitudePtr,
+			FlightEndurance:   flightEndurance,
+		},
+		Conflicts:              []ConflictHistory{},
+		Metadata:               metadata,
+		EstimatedUnitsProduced: estimatedUnitsProducedPtr,
+		EstimatedActiveUnits:   estimatedActiveUnitsPtr,
+		PhotoUrl:               photoURLPtr,
+		ManualArchive:          manualArchive,
+	}, nil
+}
+
+func parseFlexibleDateTime(raw string) (time.Time, error) {
+	if t, err := time.Parse(time.RFC3339, raw); err == nil {
+		return t, nil
+	}
+	if t, err := time.Parse("2006-01-02", raw); err == nil {
+		return t, nil
+	}
+	return time.Time{}, fmt.Errorf("unsupported datetime format: %s", raw)
+}
+
+func parseFlexibleDuration(raw string) (time.Duration, error) {
+	if d, err := time.ParseDuration(raw); err == nil {
+		return d, nil
+	}
+
+	parts := strings.Split(raw, ":")
+	if len(parts) == 3 {
+		var hh, mm, ss int
+		if _, err := fmt.Sscanf(raw, "%d:%d:%d", &hh, &mm, &ss); err == nil {
+			return time.Duration(hh)*time.Hour + time.Duration(mm)*time.Minute + time.Duration(ss)*time.Second, nil
+		}
+	}
+
+	return 0, fmt.Errorf("unsupported duration format: %s", raw)
+}
+
+var aircrafts = []Aircraft{
 	{
 		ID:           uuid.New(),
-		Model:        "A320",
+		Code:         "A320",
 		Manufacturer: "Airbus",
 	},
 	{
 		ID:           uuid.New(),
-		Model:        "B737",
+		Code:         "B737",
 		Manufacturer: "Boeing",
 	},
 }
