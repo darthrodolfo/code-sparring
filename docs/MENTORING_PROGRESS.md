@@ -186,6 +186,14 @@ After C# checkpoint is solid, open Phase 0-1 in next stack (Go, Python, or Node)
 - For any active stack, pre-explain core syntax/idioms that commonly block flow (iteration semantics, variable declaration, reference/pointer behavior, scoping, and error handling style).
 - Keep explanations concise and tied to current code block to avoid context-switch friction.
 
+## What "Manual Coding" Means
+"Manual" = the user **types the code themselves**. It does NOT mean avoiding CLIs or scaffolding tools.
+
+- Always recommend the appropriate CLI (`nest new`, `dotnet new`, `go mod init`, `fastapi` generators, etc.).
+- Never walk through creating boilerplate files by hand when a CLI handles it — that is wasted effort, not learning.
+- Learning happens by: understanding what the CLI created, why it's structured that way, and coding the business logic manually.
+- Using the right CLI in a technical interview is professional competence, not a shortcut.
+
 # 🥊 AeroStack Lab — IDE AI Context Pack (Phase 0: Lift-off)
 
 ## What is happening

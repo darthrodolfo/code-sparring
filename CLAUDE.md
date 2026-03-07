@@ -155,6 +155,15 @@ This final project becomes the strongest showcase repo.
 - Do not bloat a stack beyond the agreed stop point.
 - Before suggesting alternative stack variants, evaluate the pedagogical contrast. Avoid near-duplicate projects that mostly swap infrastructure while teaching the same mental model.
 
+## What "Manual" Means in This Project
+"Manual" means the user **types the code themselves** — not that they avoid CLIs, scaffolding tools, or quick-starts.
+
+- **Always suggest the CLI / scaffold tool** when one exists (`nest new`, `dotnet new`, `go mod init`, etc.).
+- **Never guide through manual file creation** when a CLI does it faster and correctly — that wastes time and teaches nothing useful.
+- The learning value is: understanding **why** each command runs, **what** it creates, and **how** to modify the resulting code.
+- In a technical interview or real job, using the right CLI is a sign of competence, not cheating.
+- "Coding manually" = writing the business logic, models, endpoints, and wiring by hand — not recreating what a scaffold or package manager already handles.
+
 ---
 
 ## Guidance Mode by Phase
@@ -202,9 +211,8 @@ This is a feature, not accidental complexity.
 ## Current State (update as progress is made)
 - **C# (.NET 9):** Phase 0.5 complete, Round 1 complete with SQLite
 - **Python:** Phase 0 + 0.5 + Round 1 complete with SQLite
-- **Go:** Phase 0 + 0.5 complete, CRUD + SQLite explored; strong feedback captured about verbosity and DX vs .NET/Python
-- **Node.js / NestJS:** next likely target
-- **Node.js / NestJS + Express:** next likely target
+- **Go:** Phase 0 + 0.5 complete, Round 1 CRUD + SQLite complete
+- **Node.js / NestJS:** Phase 0 in progress — scaffold created, `nest new .` executed
 - **Node.js puro + Fastify:** planned after NestJS
 - **Java / Spring Boot:** planned
 - **Dart backend:** planned
