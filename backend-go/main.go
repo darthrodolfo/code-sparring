@@ -137,7 +137,7 @@ func aircraftV2CollectionHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		listAircraftV2Handler(w, r)
 	case http.MethodPost:
-		writeError(w, http.StatusNotImplemented, "not implemented", "createAircraftV2Handler pending")
+		createAircraftV2Handler(w, r)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -148,9 +148,9 @@ func aircraftV2ItemHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		getAircraftV2ByIDHandler(w, r)
 	case http.MethodPut:
-		writeError(w, http.StatusNotImplemented, "not implemented", "updateAircraftV2Handler pending")
+		updateAircraftV2Handler(w, r)
 	case http.MethodDelete:
-		writeError(w, http.StatusNotImplemented, "not implemented", "deleteAircraftV2Handler pending")
+		deleteAircraftV2Handler(w, r)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -302,7 +302,6 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 
 	err := json.NewDecoder(request.Body).Decode(&createRequest)
 	if err != nil {
-		//http.Error(writer, `{"err": "invalid request body"}`, http.StatusBadRequest)
 		json.NewEncoder(writer).Encode(map[string]string{"err": "invalid request body"})
 		return
 	}
@@ -311,13 +310,11 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 	createRequest.Manufacturer = strings.TrimSpace(createRequest.Manufacturer)
 
 	if createRequest.Code == "" {
-		//http.Error(writer, `{"err": "code is required"}`, http.StatusBadRequest)
 		json.NewEncoder(writer).Encode(map[string]string{"err": "code is required"})
 		return
 	}
 
 	if createRequest.Manufacturer == "" {
-		//http.Error(writer, `{"err": "manufacturer is required"}`, http.StatusBadRequest)
 		json.NewEncoder(writer).Encode(map[string]string{"err": "manufacturer is required"})
 		return
 	}
@@ -342,26 +339,127 @@ func createAircraftHandler(writer http.ResponseWriter, request *http.Request) {
 
 }
 
+func mapCreateRequestToAircraftV2(req CreateAircraftV2Request) AircraftV2 {
+	return AircraftV2{
+		ID:                     uuid.New(),
+		Model:                  strings.TrimSpace(req.Model),
+		Manufacturer:           strings.TrimSpace(req.Manufacturer),
+		SerialNumber:           req.SerialNumber,
+		YearOfManufacture:      req.YearOfManufacture,
+		PriceMillions:          req.PriceMillions,
+		EmptyWeightKg:          req.EmptyWeightKg,
+		Status:                 req.Status,
+		Role:                   req.Role,
+		Tags:                   req.Tags,
+		FirstFlightDate:        req.FirstFlightDate,
+		LastMaintenanceTime:    req.LastMaintenanceTime,
+		BaseLocation:           req.BaseLocation,
+		Specs:                  req.Specs,
+		Conflicts:              req.Conflicts,
+		Metadata:               req.Metadata,
+		EstimatedUnitsProduced: req.EstimatedUnitsProduced,
+		EstimatedActiveUnits:   req.EstimatedActiveUnits,
+		PhotoUrl:               req.PhotoUrl,
+		ManualArchive:          req.ManualArchive,
+	}
+}
+
+func createAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
+	var req CreateAircraftV2Request
+
+	if err := decodeJSON(r, &req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body", err.Error())
+		return
+	}
+
+	req.Model = strings.TrimSpace(req.Model)
+	req.Manufacturer = strings.TrimSpace(req.Manufacturer)
+
+	if req.Model == "" {
+		writeError(w, http.StatusBadRequest, "validation error", "model is required")
+		return
+	}
+	if req.Manufacturer == "" {
+		writeError(w, http.StatusBadRequest, "validation error", "manufacturer is required")
+		return
+	}
+
+	entity := mapCreateRequestToAircraftV2(req)
+	created := aircraftV2Store.Create(entity)
+
+	w.Header().Set("Location", "/aircraft-v2/"+created.ID.String())
+	writeJSON(w, http.StatusCreated, created)
+}
+
 func decolamosHandler(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != http.MethodGet {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	//_, err := fmt.Fprint(writer, "Decolamos")
 	err := json.NewEncoder(writer).Encode(map[string]string{"message": "Decolamos"})
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}
 }
 
+func updateAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
+	id, err := parseAircraftV2IDFromPath(r.URL.Path)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid id", err.Error())
+		return
+	}
+
+	var req CreateAircraftV2Request
+	if err := decodeJSON(r, &req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body", err.Error())
+		return
+	}
+
+	req.Model = strings.TrimSpace(req.Model)
+	req.Manufacturer = strings.TrimSpace(req.Manufacturer)
+
+	if req.Model == "" {
+		writeError(w, http.StatusBadRequest, "validation error", "model is required")
+		return
+	}
+	if req.Manufacturer == "" {
+		writeError(w, http.StatusBadRequest, "validation error", "manufacturer is required")
+		return
+	}
+
+	entity := mapCreateRequestToAircraftV2(req)
+	updated, ok := aircraftV2Store.Update(id, entity)
+	if !ok {
+		writeError(w, http.StatusNotFound, "aircraft not found", "")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, updated)
+}
+
+func deleteAircraftV2Handler(w http.ResponseWriter, r *http.Request) {
+	id, err := parseAircraftV2IDFromPath(r.URL.Path)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid id", err.Error())
+		return
+	}
+
+	ok := aircraftV2Store.Delete(id)
+	if !ok {
+		writeError(w, http.StatusNotFound, "aircraft not found", "")
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func main() {
-	//fmt.Println("Hello, World!")
 	http.HandleFunc("/decolamos", decolamosHandler)
 	http.HandleFunc("/aircraft", aircraftHandler)
 
-	http.HandleFunc("/aircraft-v2", aircraftV2CollectionHandler) // GET, POST
-	http.HandleFunc("/aircraft-v2/", aircraftV2ItemHandler)      // GET, PUT, DELETE com id
+	http.HandleFunc("/aircraft-v2", aircraftV2CollectionHandler)
+	http.HandleFunc("/aircraft-v2/", aircraftV2ItemHandler)
 
 	log.Println("server running on :8080")
 
