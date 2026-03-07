@@ -2,9 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type Aircraft struct {
@@ -16,6 +19,45 @@ type Aircraft struct {
 type CreateAircraftRequest struct {
 	Code         string `json:"code"`
 	Manufacturer string `json:"manufacturer"`
+}
+
+type AircraftRole string
+
+const (
+	RoleFighter        AircraftRole = "Fighter"
+	RoleBomber         AircraftRole = "Bomber"
+	RoleTransport      AircraftRole = "Transport"
+	RoleTrainer        AircraftRole = "Trainer"
+	RoleDrone          AircraftRole = "Drone"
+	RoleReconnaissance AircraftRole = "Reconnaissance"
+)
+
+type AircraftStatus string
+
+const (
+	StatusActive      AircraftStatus = "Active"
+	StatusMaintenance AircraftStatus = "Maintenance"
+	StatusRetired     AircraftStatus = "Retired"
+	StatusStored      AircraftStatus = "Stored"
+)
+
+type GeoLocation struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+}
+
+type AircraftSpecs struct {
+	MaxSpeedKmh       int           `json:"max_speed_kmh"`
+	WingspanMeters    float64       `json:"wingspan_meters"`
+	RangeKm           int           `json:"range_km"`
+	MaxAltitudeMeters *int          `json:"max_altitude_meters"`
+	FlightEndurance   time.Duration `json:"flight_endurance"`
+}
+
+type ConflictHistory struct {
+	Name      string `json:"name"`
+	StartYear int    `json:"start_year"`
+	EndYear   int    `json:"end_year"`
 }
 
 var aircrafts = []Aircraft{
