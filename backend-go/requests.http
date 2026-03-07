@@ -1,0 +1,45 @@
+### Phase 0 — Lift-off (GET /decolamos)
+GET http://localhost:8080/decolamos
+
+###
+
+### Phase 0 — List aircraft (empty or populated)
+GET http://localhost:8080/aircraft
+
+###
+
+### Phase 0 — Create aircraft (minimal payload)
+POST http://localhost:8080/aircraft
+Content-Type: application/json
+
+{
+  "model": "F-16C",
+  "manufacturer": "Lockheed Martin",
+  "year": 1991
+}
+
+###
+
+### Phase 0 — Create aircraft (invalid year — too old)
+POST http://localhost:8080/aircraft
+Content-Type: application/json
+
+{
+  "model": "Ancient",
+  "manufacturer": "Wright Brothers",
+  "year": 1880
+}
+
+###
+
+### Phase 0 — Create aircraft (invalid year — future)
+POST http://localhost:8080/aircraft
+Content-Type: application/json
+
+{
+  "model": "Future Fighter",
+  "manufacturer": "Fictional Inc",
+  "year": 2050
+}
+
+###
