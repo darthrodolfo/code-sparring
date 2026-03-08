@@ -109,10 +109,10 @@ Here are the fields covering all major C# data types and concepts:
 
 ### 3. Implementation Steps in `backend-csharp`
 
-1. ~~Define all types at the bottom of Program.cs~~ DONE
-2. ~~Create POST /aircraft-v2 with CreateAircraftV2Request DTO~~ DONE
-3. ~~Configure JsonStringEnumConverter for string enum serialization~~ DONE
-4. ~~Add ConcurrentDictionary in-memory storage~~ DONE
+1. Define all types 
+2. Create POST /aircraft-v2 with CreateAircraftV2Request
+3. Configure enum serialization if needed
+4. Add ConcurrentDictionary in-memory storage
 5. Add GET /aircraft-v2 (list all from store)
 6. Add GET /aircraft-v2/{id} (lookup by Guid)
 7. Add PUT /aircraft-v2/{id} (update)
