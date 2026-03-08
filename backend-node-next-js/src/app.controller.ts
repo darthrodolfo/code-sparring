@@ -10,7 +10,6 @@ import {
   Put,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { CreateAircraftDto } from './dto/create-aircraft.dto';
 import type { AircraftV2 } from './entities/aircraft-v2.entity';
 import { CreateAircraftV2Request } from './dto/create-aircraft-v2.dto';
 import { UpdateAircraftV2Request } from './dto/update-aircraft-v2.dto';
@@ -54,7 +53,7 @@ export class AppController {
   }
 
   @Post('aircraft')
-  createAircraft(@Body() dto: CreateAircraftDto): object {
+  createAircraft(@Body() dto: CreateAircraftV2Request): object {
     return {
       id: randomUUID(),
       ...dto,
