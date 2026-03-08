@@ -1,0 +1,36 @@
+@baseUrl = http://localhost:3000
+
+### Health
+GET {{baseUrl}}/
+
+### Decolamos
+GET {{baseUrl}}/decolamos
+
+### List Aircraft
+GET {{baseUrl}}/aircraft
+
+### Create Aircraft (v2 payload)
+POST {{baseUrl}}/aircraft
+Content-Type: application/json
+
+{
+  "model": "F-22 Raptor",
+  "manufacturer": "Lockheed Martin",
+  "year": 2005,
+  "status": "Active",
+  "category": "Fighter",
+  "maxSpeedKph": 1960,
+  "ceilingMeters": 19812,
+  "rangeKm": 2960,
+  "engineCount": 2,
+  "engineModel": "Pratt & Whitney F119",
+  "wingspanMeters": 13.56,
+  "emptyWeightKg": 19700,
+  "maxTakeoffWeightKg": 38000,
+  "countryOfOrigin": "USA",
+  "isStealthCapable": true,
+  "tags": ["stealth", "supercruise", "5th-gen"],
+  "conflictHistory": [
+    { "conflictName": "Operation Inherent Resolve", "startYear": 2014, "role": "Air superiority" }
+  ]
+}
