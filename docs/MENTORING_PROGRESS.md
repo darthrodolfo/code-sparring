@@ -99,9 +99,15 @@ Later:
   - Exception-based error handling (NotFoundException → 404 automatic)
 - Verified: enum validation, nested object validation, optional fields, transactions, cascade delete
 
+### Dart (Dart Frog) — In Progress
+- Framework: Dart Frog (Very Good Ventures) — file-based routing, CLI scaffolding
+- Target: Phase 0 → CRUD → SQLite → stop
+- Port: 8080
+
 ### Next: Checkpoint Actions
-- NestJS stack reached CRUD + SQLite stop-point
-- Next stack: Node.js puro + Fastify (or Java / Spring Boot)
+- NestJS stack reached CRUD + SQLite stop-point ✅
+- Next stack: **Dart backend (Dart Frog)** — in progress
+- Remaining planned: Node.js puro + Fastify, Java / Spring Boot
 
 ---
 
@@ -206,18 +212,35 @@ Start after Round 4:
 ---
 
 ## 📝 Next Action
-Complete Round 1 CRUD endpoints with ConcurrentDictionary storage, then add SQLite persistence.
-After C# checkpoint is solid, open Phase 0-1 in next stack (Go, Python, or Node).
+- **Dart (Dart Frog):** Phase 0 → CRUD → SQLite → stop
+- Remaining safari stacks: Node.js puro + Fastify, Java / Spring Boot
+- After all safari stacks: return to C# / .NET for premium backend + AI integrations
+- After backend: minimal UI/Frontend for showcase/demo purposes
 
 ## Mentoring Protocol Update (Cross-Stack)
 - During implementation, explain new language syntax immediately when first used.
 - For any active stack, pre-explain core syntax/idioms that commonly block flow (iteration semantics, variable declaration, reference/pointer behavior, scoping, and error handling style).
 - Keep explanations concise and tied to current code block to avoid context-switch friction.
 
+## Framework-First Rule (MANDATORY — applies to ALL AI agents)
+**ALWAYS recommend frameworks and CLIs for every safari stack.** NEVER suggest stdlib-level / low-level approaches.
+
+- The user is a **senior engineer with 15+ years of experience**. They know how HTTP works.
+- Learning low-level plumbing in every language wastes time and teaches the same thing repeatedly.
+- The goal is **language idioms + framework DX + ecosystem ergonomics**, not reimplementing routing.
+- In production and interviews, using frameworks is expected. Not using one is a red flag.
+- Examples: Gin/Echo for Go, Dart Frog for Dart, NestJS/Fastify for Node, FastAPI for Python, Spring Boot for Java.
+
+## Anti-Pattern: Near-Duplicate Stacks
+**NEVER suggest two stacks that only differ by HTTP adapter or minor infrastructure swap.**
+- ❌ `NestJS + Express` AND `NestJS + Fastify` — same mental model, trivial adapter swap.
+- ✅ `NestJS + Express` AND `Node puro + Fastify` — genuinely different approaches.
+- Before suggesting any stack variation, ask: "Does this teach a meaningfully different mental model?"
+
 ## What "Manual Coding" Means
 "Manual" = the user **types the code themselves**. It does NOT mean avoiding CLIs or scaffolding tools.
 
-- Always recommend the appropriate CLI (`nest new`, `dotnet new`, `go mod init`, `fastapi` generators, etc.).
+- Always recommend the appropriate CLI (`nest new`, `dotnet new`, `go mod init`, `dart_frog create`, etc.).
 - Never walk through creating boilerplate files by hand when a CLI handles it — that is wasted effort, not learning.
 - Learning happens by: understanding what the CLI created, why it's structured that way, and coding the business logic manually.
 - Using the right CLI in a technical interview is professional competence, not a shortcut.

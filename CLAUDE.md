@@ -155,10 +155,36 @@ This final project becomes the strongest showcase repo.
 - Do not bloat a stack beyond the agreed stop point.
 - Before suggesting alternative stack variants, evaluate the pedagogical contrast. Avoid near-duplicate projects that mostly swap infrastructure while teaching the same mental model.
 
+## Framework-First Rule (MANDATORY)
+**ALWAYS recommend frameworks and CLIs for every safari stack.** NEVER suggest stdlib-level / low-level approaches (e.g., raw `net/http` in Go, `shelf` in Dart, raw `http` module in Node).
+
+Rationale:
+- The user is a **senior engineer with 15+ years of experience**. They already understand how HTTP, headers, routing, and request lifecycle work.
+- Learning low-level plumbing in every language adds no value — it teaches the same thing repeatedly at the cost of enormous time.
+- The goal is to learn **language idioms, framework DX, and ecosystem ergonomics** through a real framework, not to reinvent routing and JSON handling from scratch.
+- In any professional context (interviews, real jobs, production code), using the proper framework is expected. Not using one is a red flag, not a strength.
+
+Concrete examples of what to recommend:
+- **Go:** Gin, Echo, or Fiber — not raw `net/http`
+- **Dart:** Dart Frog — not `shelf`
+- **Node.js:** NestJS, Fastify, or Express — not raw `http` module
+- **Python:** FastAPI — not raw WSGI/ASGI
+- **Java:** Spring Boot — not raw servlets
+- **C#:** Minimal API or full MVC — not raw `HttpListener`
+
+If a stdlib approach was already used in a completed stack (e.g., Go with `net/http`), do not retroactively change it. But for all future stacks, **use the framework**.
+
+## Anti-Pattern: Near-Duplicate Stacks
+**NEVER suggest two stacks that only differ by HTTP adapter or minor infrastructure swap.** Example of what NOT to do:
+- ❌ `NestJS + Express` AND `NestJS + Fastify` as separate safari entries — these teach the same mental model with a trivial adapter swap.
+- ✅ `NestJS + Express` (framework-heavy, opinionated) AND `Node puro + Fastify` (lightweight, less magic) — these teach genuinely different approaches.
+
+Before suggesting any stack variation, ask: **"Does this teach a meaningfully different mental model, or just swap an infrastructure detail?"** If the latter, do not suggest it.
+
 ## What "Manual" Means in This Project
 "Manual" means the user **types the code themselves** — not that they avoid CLIs, scaffolding tools, or quick-starts.
 
-- **Always suggest the CLI / scaffold tool** when one exists (`nest new`, `dotnet new`, `go mod init`, etc.).
+- **Always suggest the CLI / scaffold tool** when one exists (`nest new`, `dotnet new`, `go mod init`, `dart_frog create`, etc.).
 - **Never guide through manual file creation** when a CLI does it faster and correctly — that wastes time and teaches nothing useful.
 - The learning value is: understanding **why** each command runs, **what** it creates, and **how** to modify the resulting code.
 - In a technical interview or real job, using the right CLI is a sign of competence, not cheating.
@@ -213,9 +239,9 @@ This is a feature, not accidental complexity.
 - **Python:** Phase 0 + 0.5 + Round 1 complete with SQLite
 - **Go:** Phase 0 + 0.5 complete, Round 1 CRUD + SQLite complete
 - **Node.js / NestJS:** Phase 0 + 0.5 + Round 1 complete with SQLite
-- **Node.js puro + Fastify:** planned after NestJS
+- **Dart backend (Dart Frog):** in progress
+- **Node.js puro + Fastify:** planned
 - **Java / Spring Boot:** planned
-- **Dart backend:** planned
 
 ---
 
@@ -308,6 +334,14 @@ Current backend technologies discussed or planned in this code-sparring project:
 - SQLite
 - no framework initially; learn core model first
 
+### Dart
+- Dart Frog framework (by Very Good Ventures)
+- File-based routing (routes/ directory)
+- Hot reload via `dart_frog dev`
+- dart_frog CLI for scaffolding (`dart_frog create`, `dart_frog new route`)
+- SQLite via `sqlite3` package (dart:ffi based)
+- Port: 8080 (default)
+
 ### General repo principle
 Start monolithic in early phases when it helps learning.
 Split files/folders only when the monolith starts obscuring responsibilities.
@@ -318,9 +352,10 @@ Split files/folders only when the monolith starts obscuring responsibilities.
 - `backend-csharp/Program.cs` — Main C# API file (monolithic for early phases)
 - `docs/MENTORING_PROGRESS.md` — Progress tracker and round definitions
 - `docs/tech-setup-implementation/implementation_plan.md` — AircraftV2 entity plan + navigation model
-- `docs/tech-docs/requests.http` — HTTP test requests (REST Client compatible)
 - `docs/roadmap-linguagem-zero-ao-avancado.md` — Generic language learning roadmap (phases 1-5)
-- `backend-go/docs/GO_LOOPS_QUICK_REF.md` — Go loop/range quick reference for C#-to-Go transition
+- `docs/go/GO_LOOPS_QUICK_REF.md` — Go loop/range quick reference for C#-to-Go transition
+- `docs/go/PROGRESS.md` — Go backend progress tracker
+- `docs/go/GO_README.md` — Go backend documentation
 
 ---
 
@@ -343,7 +378,10 @@ Split files/folders only when the monolith starts obscuring responsibilities.
 - `cd backend-node-next-js && npm run start:dev`
 - `cd backend-node-next-js && npm run build`
 
-Add Java / Dart commands as those stacks are bootstrapped.
+- `cd backend-dart && dart_frog dev`
+- `cd backend-dart && dart_frog build`
+
+Add Java commands as that stack is bootstrapped.
 
 ---
 
@@ -366,7 +404,10 @@ Bad behavior examples:
 - hiding trade-offs,
 - pretending all stacks are equally ergonomic,
 - pushing unnecessary architecture too early,
-- expanding a safari stack into a giant platform.
+- expanding a safari stack into a giant platform,
+- suggesting stdlib-level approaches when a framework exists (e.g., raw `net/http` instead of Gin, `shelf` instead of Dart Frog),
+- suggesting near-duplicate stacks that only swap an HTTP adapter (e.g., NestJS+Fastify vs NestJS+Express as separate safari entries),
+- treating a 15-year senior like a junior who needs to learn what HTTP headers are.
 
 ---
 
