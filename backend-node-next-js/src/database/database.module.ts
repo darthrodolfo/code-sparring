@@ -18,4 +18,4 @@ export const DB_TOKEN = 'DATABASE';
   ],
   exports: [DB_TOKEN],
 })
-export class DatabaseModulo {}
+export class DatabaseModule {}

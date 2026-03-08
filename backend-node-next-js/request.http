@@ -30,7 +30,29 @@ Content-Type: application/json
   "countryOfOrigin": "USA",
   "isStealthCapable": true,
   "tags": ["stealth", "supercruise", "5th-gen"],
+  "firstFlightDate": "1997-09-07T00:00:00Z",
+  "lastMaintenanceTime": "2025-11-01T08:30:00Z",
+  "description" : "The F-22 Raptor is a fifth-generation, single-seat, twin-engine, all-weather stealth tactical fighter aircraft developed for the United States Air Force (USAF).\nIt was designed primarily as an air superiority fighter, but also has ground attack, electronic warfare, and signal intelligence capabilities.",
   "conflictHistory": [
     { "conflictName": "Operation Inherent Resolve", "startYear": 2014, "role": "Air superiority" }
-  ]
+  ],
+  "baseLocation": {
+    "latitude": 30.4058,
+    "longitude": -86.4764
+  },
+  "specs": {
+    "maxSpeedKmh": 1960,
+    "wingspanMeters": 13.56,
+    "rangeKm": 2960,
+    "maxAltitudeMeters": 19812,
+    "flightEndurance": 18000000000000
+  },
+  "metadata": {
+    "classification": "5th Generation",
+    "program": "ATF"
+  },
+  "estimatedUnitsProduced": 187,
+  "estimatedActiveUnits": 183,
+  "photoUrl": "https://example.com/f22.jpg",
+  "manualArchive": "U3RlYWx0aCBtYW51YWw="
 }
