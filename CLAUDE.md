@@ -212,7 +212,7 @@ This is a feature, not accidental complexity.
 - **C# (.NET 9):** Phase 0.5 complete, Round 1 complete with SQLite
 - **Python:** Phase 0 + 0.5 + Round 1 complete with SQLite
 - **Go:** Phase 0 + 0.5 complete, Round 1 CRUD + SQLite complete
-- **Node.js / NestJS:** Phase 0 in progress — scaffold created, `nest new .` executed
+- **Node.js / NestJS:** Phase 0 + 0.5 + Round 1 complete with SQLite
 - **Node.js puro + Fastify:** planned after NestJS
 - **Java / Spring Boot:** planned
 - **Dart backend:** planned
@@ -249,6 +249,20 @@ Pain points observed:
 - more manual HTTP / JSON / error handling,
 - more manual mapping and helper functions,
 - less ergonomic than .NET minimal API for rich business endpoints.
+
+### Node.js / NestJS
+Strengths observed:
+- decorator-based routing is clean and readable,
+- modular architecture with DI out of the box,
+- TypeScript gives strong typing over JS runtime,
+- class-validator decorator pattern similar to C# data annotations,
+- PartialType utility avoids DTO duplication for update endpoints,
+- better-sqlite3 synchronous API is simple and predictable.
+
+Pain points observed:
+- module/provider/controller registration has a learning curve (DI wiring errors at runtime, not compile-time),
+- decorator metadata requires extra packages (reflect-metadata, class-transformer),
+- more boilerplate for nested validation (@ValidateNested + @Type) compared to C# automatic model binding.
 
 These conclusions should inform future comparisons, not bias them blindly.
 
@@ -326,7 +340,10 @@ Split files/folders only when the monolith starts obscuring responsibilities.
 - `cd backend-go && go run .`
 - `cd backend-go && go build`
 
-Add Node / Java / Dart commands as those stacks are bootstrapped.
+- `cd backend-node-next-js && npm run start:dev`
+- `cd backend-node-next-js && npm run build`
+
+Add Java / Dart commands as those stacks are bootstrapped.
 
 ---
 

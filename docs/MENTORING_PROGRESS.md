@@ -72,8 +72,36 @@ Later:
   - Tag normalization + full validation
 - Verified: uuid.UUID, decimal.Decimal, time.Time (RFC3339), time.Duration (nanoseconds), []byte (Base64)
 
+### Node.js / NestJS — Phase 0 COMPLETE, Phase 0.5 COMPLETE, Round 1 COMPLETE
+- `nest new .` scaffold + TypeScript + ESLint + Prettier
+- GET /decolamos, GET /aircraft, POST /aircraft with class-validator validation
+- Enums: AircraftStatus, AircraftCategory (TypeScript native enum with string values)
+- Nested validation: ConflictHistoryDto with @ValidateNested + @Type (class-transformer)
+- AircraftV2 entity: interface with optional fields (`?` syntax)
+- CreateAircraftV2Request DTO with decorators: @IsString, @IsEnum, @IsInt, @Min, @Max, @IsOptional, @IsArray, @ArrayMaxSize
+- UpdateAircraftV2Request via PartialType (all fields optional, inherits validation rules)
+- **Full CRUD:**
+  - GET /aircraft — list all with hydrated tags/conflicts
+  - GET /aircraft/:id — fetch single or 404 (NotFoundException)
+  - POST /aircraft — 201 Created with UUID
+  - PUT /aircraft/:id — partial update with merge
+  - DELETE /aircraft/:id — 204 No Content
+- **SQLite persistence (better-sqlite3):**
+  - 3-table schema (aircraft_v2, aircraft_tags, aircraft_conflicts)
+  - Foreign keys with ON DELETE CASCADE
+  - Transactions via db.transaction() on all writes
+  - hydrate() method for DB row → entity mapping (snake_case → camelCase)
+  - Boolean stored as INTEGER (0/1) — same as Go/Python
+- **Architecture:**
+  - DatabaseModule (@Global, custom provider with DB_TOKEN injection)
+  - AircraftModule (Controller + Service + Repository)
+  - OnModuleInit lifecycle hook for schema initialization
+  - Exception-based error handling (NotFoundException → 404 automatic)
+- Verified: enum validation, nested object validation, optional fields, transactions, cascade delete
+
 ### Next: Checkpoint Actions
-- Open Node.js Phase 0 (final baseline stack)
+- NestJS stack reached CRUD + SQLite stop-point
+- Next stack: Node.js puro + Fastify (or Java / Spring Boot)
 
 ---
 

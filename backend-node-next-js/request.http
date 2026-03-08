@@ -1,15 +1,15 @@
 @baseUrl = http://localhost:3000
 
-### Health
-GET {{baseUrl}}/
-
-### Decolamos
+### Health / Decolamos
 GET {{baseUrl}}/decolamos
 
 ### List Aircraft
 GET {{baseUrl}}/aircraft
 
-### Create Aircraft (v2 payload)
+### Get Aircraft by ID
+GET {{baseUrl}}/aircraft/REPLACE_WITH_ID
+
+### Create Aircraft (full payload)
 POST {{baseUrl}}/aircraft
 Content-Type: application/json
 
@@ -30,29 +30,38 @@ Content-Type: application/json
   "countryOfOrigin": "USA",
   "isStealthCapable": true,
   "tags": ["stealth", "supercruise", "5th-gen"],
-  "firstFlightDate": "1997-09-07T00:00:00Z",
-  "lastMaintenanceTime": "2025-11-01T08:30:00Z",
-  "description" : "The F-22 Raptor is a fifth-generation, single-seat, twin-engine, all-weather stealth tactical fighter aircraft developed for the United States Air Force (USAF).\nIt was designed primarily as an air superiority fighter, but also has ground attack, electronic warfare, and signal intelligence capabilities.",
+  "firstFlightDate": "1997-09-07",
+  "description": "The F-22 Raptor is a fifth-generation, single-seat, twin-engine, all-weather stealth tactical fighter aircraft developed for the United States Air Force (USAF).",
   "conflictHistory": [
     { "conflictName": "Operation Inherent Resolve", "startYear": 2014, "role": "Air superiority" }
-  ],
-  "baseLocation": {
-    "latitude": 30.4058,
-    "longitude": -86.4764
-  },
-  "specs": {
-    "maxSpeedKmh": 1960,
-    "wingspanMeters": 13.56,
-    "rangeKm": 2960,
-    "maxAltitudeMeters": 19812,
-    "flightEndurance": 18000000000000
-  },
-  "metadata": {
-    "classification": "5th Generation",
-    "program": "ATF"
-  },
-  "estimatedUnitsProduced": 187,
-  "estimatedActiveUnits": 183,
-  "photoUrl": "https://example.com/f22.jpg",
-  "manualArchive": "U3RlYWx0aCBtYW51YWw="
+  ]
 }
+
+### Create Aircraft (minimal required fields only)
+POST {{baseUrl}}/aircraft
+Content-Type: application/json
+
+{
+  "model": "MQ-9 Reaper",
+  "manufacturer": "General Atomics",
+  "year": 2007,
+  "status": "Active",
+  "category": "Drone",
+  "engineCount": 1,
+  "countryOfOrigin": "USA",
+  "isStealthCapable": false,
+  "tags": ["UAV", "ISR"],
+  "conflictHistory": []
+}
+
+### Update Aircraft
+PUT {{baseUrl}}/aircraft/REPLACE_WITH_ID
+Content-Type: application/json
+
+{
+  "status": "Maintenance",
+  "tags": ["stealth", "supercruise", "5th-gen", "upgraded"]
+}
+
+### Delete Aircraft
+DELETE {{baseUrl}}/aircraft/REPLACE_WITH_ID
