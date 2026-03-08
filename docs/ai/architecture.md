@@ -77,4 +77,4 @@ The AircraftV2 entity covers 20 fields spanning all major type categories per la
 - Nested records/structs: `GeoLocation`, `AircraftSpecs`, `ConflictHistory`
 - Binary payloads, URIs, UUIDs
 
-Full entity specification: [implementation_plan.md](../study-docs/general/implementation_plan.md)
+Full entity specification: [implementation-plan.md](../study-docs/general/implementation-plan.md)

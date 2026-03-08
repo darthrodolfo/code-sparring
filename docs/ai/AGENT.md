@@ -27,10 +27,10 @@ See [CLAUDE.md](CLAUDE.md) for Claude Code-specific behavioral rules.
 Personal study notes, learning trackers, and reference materials — not AI context files:
 
 ### General
-- [docs/study-docs/general/implementation_plan.md](../../study-docs/general/implementation_plan.md) — AircraftV2 entity specification
-- [docs/study-docs/general/roadmap-linguagem-zero-ao-avancado.md](../../study-docs/general/roadmap-linguagem-zero-ao-avancado.md) — Generic language learning roadmap
-- [docs/study-docs/general/MENTORING_PROGRESS.md](../../study-docs/general/MENTORING_PROGRESS.md) — Legacy progress tracker
+- [implementation-plan.md](../study-docs/general/implementation-plan.md) — AircraftV2 entity specification
+- [roadmap-linguagem-zero-ao-avancado.md](../study-docs/general/roadmap-linguagem-zero-ao-avancado.md) — Generic language learning roadmap
+- [mentoring-progress.md](../study-docs/general/mentoring-progress.md) — Legacy progress tracker
 
 ### Go Backend
-- [docs/study-docs/go/GO_LOOPS_QUICK_REF.md](../../study-docs/go/GO_LOOPS_QUICK_REF.md) — Go syntax quick reference
-- [docs/study-docs/go/PROGRESS.md](../../study-docs/go/PROGRESS.md) — Go backend progress tracker
+- [loops-quick-ref.md](../study-docs/go/loops-quick-ref.md) — Go syntax quick reference
+- [progress.md](../study-docs/go/progress.md) — Go backend progress tracker

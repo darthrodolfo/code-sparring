@@ -105,12 +105,12 @@ cd backend-dart && dart_frog build
 | File | Purpose |
 |------|---------|
 | `backend-csharp/Program.cs` | Main C# API file (monolithic for early phases) |
-| `docs/study-docs/general/implementation_plan.md` | AircraftV2 entity plan + navigation model |
+| `docs/study-docs/general/implementation-plan.md` | AircraftV2 entity plan + navigation model |
 | `docs/study-docs/general/roadmap-linguagem-zero-ao-avancado.md` | Generic language learning roadmap |
-| `docs/study-docs/go/GO_LOOPS_QUICK_REF.md` | Go loop/range quick reference |
-| `docs/study-docs/go/PROGRESS.md` | Go backend progress tracker |
+| `docs/study-docs/go/loops-quick-ref.md` | Go loop/range quick reference |
+| `docs/study-docs/go/progress.md` | Go backend progress tracker |
 | `backend-go/GO_README.md` | Go backend documentation |
-| `docs/study-docs/general/MENTORING_PROGRESS.md` | Legacy progress tracker (content migrated to docs/ai/) |
+| `docs/study-docs/general/mentoring-progress.md` | Legacy progress tracker |
 | Each stack: `requests.http` | API test cases (VS Code REST Client) |
 
 ---

@@ -63,4 +63,4 @@ A trivial entity hides real stack trade-offs. A richer entity exposes:
 
 This is a feature, not accidental complexity.
 
-Full entity specification: [implementation_plan.md](../study-docs/general/implementation_plan.md)
+Full entity specification: [implementation-plan.md](../study-docs/general/implementation-plan.md)
