@@ -12,8 +12,11 @@ Desktop.ini
 .pub/
 # pubspec.lock 
 
-# Dart Frog - Onde o problema aconteceu
+# Dart Frog
 **/build/
+**/bin
+*/bin
+/bin
 .dart_frog/
 
 # IDEs & Editor
@@ -29,3 +32,7 @@ tmp/
 
 # Test
 coverage/
+
+# Local SQLite files
+data/
+*.db
