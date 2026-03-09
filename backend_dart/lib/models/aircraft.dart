@@ -11,9 +11,17 @@ class GeoLocation {
   GeoLocation({required this.latitude, required this.longitude});
 
   factory GeoLocation.fromJson(Map<String, dynamic> json) {
+    final latitudeValue = json['latitude'];
+    final longitudeValue = json['longitude'];
+    if (latitudeValue is! num) {
+      throw const FormatException('baseLocation.latitude must be a number');
+    }
+    if (longitudeValue is! num) {
+      throw const FormatException('baseLocation.longitude must be a number');
+    }
     return GeoLocation(
-      latitude: json['latitude'] as double,
-      longitude: json['longitude'] as double,
+      latitude: latitudeValue.toDouble(),
+      longitude: longitudeValue.toDouble(),
     );
   }
 
@@ -39,13 +47,35 @@ class AircraftSpecs {
   });
 
   factory AircraftSpecs.fromJson(Map<String, dynamic> json) {
+    final maxSpeedKmhValue = json['maxSpeedKmh'];
+    final wingspanMetersValue = json['wingspanMeters'];
+    final rangeKmValue = json['rangeKm'];
+    final maxAltitudeMetersValue = json['maxAltitudeMeters'];
+    final flightEnduranceValue = json['flightEndurance'];
+
+    if (maxSpeedKmhValue is! int) {
+      throw const FormatException('specs.maxSpeedKmh must be an integer');
+    }
+    if (wingspanMetersValue is! num) {
+      throw const FormatException('specs.wingspanMeters must be a number');
+    }
+    if (rangeKmValue is! int) {
+      throw const FormatException('specs.rangeKm must be an integer');
+    }
+    if (maxAltitudeMetersValue != null && maxAltitudeMetersValue is! int) {
+      throw const FormatException('specs.maxAltitudeMeters must be an integer');
+    }
+    if (flightEnduranceValue != null && flightEnduranceValue is! int) {
+      throw const FormatException('specs.flightEndurance must be an integer');
+    }
+
     return AircraftSpecs(
-        maxSpeedKmh: json['maxSpeedKmh'] as int,
-        wingspanMeters: json['wingspanMeters'] as double,
-        rangeKm: json['rangeKm'] as int,
-        maxAltitudeMeters: json['maxAltitudeMeters'] as int?,
+        maxSpeedKmh: maxSpeedKmhValue,
+        wingspanMeters: wingspanMetersValue.toDouble(),
+        rangeKm: rangeKmValue,
+        maxAltitudeMeters: maxAltitudeMetersValue as int?,
         flightEndurance:
-            Duration(microseconds: json['flightEndurance'] as int? ?? 0));
+            Duration(microseconds: flightEnduranceValue as int? ?? 0));
   }
 
   Map<String, dynamic> toJson() => {
@@ -215,6 +245,7 @@ class CreateAircraftRequest {
   final int? estimatedUnitsProduced;
   final int? estimatedActiveUnits;
   final String? photoUrl;
+  final List<int>? manualArchive;
 
   CreateAircraftRequest({
     required this.model,
@@ -235,29 +266,92 @@ class CreateAircraftRequest {
     this.estimatedUnitsProduced,
     this.estimatedActiveUnits,
     this.photoUrl,
+    this.manualArchive,
   });
 
   factory CreateAircraftRequest.fromJson(Map<String, dynamic> json) {
+    final model = json['model'];
+    final manufacturer = json['manufacturer'];
+    final yearOfManufacture = json['yearOfManufacture'];
+    final emptyWeightKg = json['emptyWeightKg'];
+    final status = json['status'];
+    final role = json['role'];
+    final firstFlightDate = json['firstFlightDate'];
+    final lastMaintenanceTime = json['lastMaintenanceTime'];
+    final baseLocation = json['baseLocation'];
+    final specs = json['specs'];
+
+    if (model is! String || model.trim().isEmpty) {
+      throw const FormatException('model is required and must be a string');
+    }
+    if (manufacturer is! String || manufacturer.trim().isEmpty) {
+      throw const FormatException(
+        'manufacturer is required and must be a string',
+      );
+    }
+    if (yearOfManufacture is! int) {
+      throw const FormatException('yearOfManufacture must be an integer');
+    }
+    if (emptyWeightKg is! num) {
+      throw const FormatException('emptyWeightKg must be a number');
+    }
+    if (status is! String) {
+      throw const FormatException('status must be a string');
+    }
+    if (role is! String) {
+      throw const FormatException('role must be a string');
+    }
+    if (firstFlightDate is! String) {
+      throw const FormatException('firstFlightDate must be a string');
+    }
+    if (lastMaintenanceTime is! String) {
+      throw const FormatException('lastMaintenanceTime must be a string');
+    }
+    if (baseLocation is! Map<String, dynamic>) {
+      throw const FormatException('baseLocation must be an object');
+    }
+    if (specs is! Map<String, dynamic>) {
+      throw const FormatException('specs must be an object');
+    }
+
+    final tagsValue = json['tags'];
+    final conflictsValue = json['conflicts'];
+    final metadataValue = json['metadata'];
+    final manualArchiveValue = json['manualArchive'];
+
+    final tags = tagsValue == null
+        ? <String>[]
+        : List<String>.from(tagsValue as List<dynamic>);
+    final conflicts = conflictsValue == null
+        ? <Map<String, dynamic>>[]
+        : List<Map<String, dynamic>>.from(conflictsValue as List<dynamic>);
+    final metadata = metadataValue == null
+        ? <String, String>{}
+        : Map<String, String>.from(metadataValue as Map<dynamic, dynamic>);
+    final manualArchive = manualArchiveValue == null
+        ? null
+        : List<int>.from(manualArchiveValue as List<dynamic>);
+
     return CreateAircraftRequest(
-      model: json['model'] as String,
-      manufacturer: json['manufacturer'] as String,
+      model: model,
+      manufacturer: manufacturer,
       serialNumber: json['serialNumber'] as String?,
-      yearOfManufacture: json['yearOfManufacture'] as int,
+      yearOfManufacture: yearOfManufacture,
       priceMillions: json['priceMillions'].toString(),
-      emptyWeightKg: (json['emptyWeightKg'] as num).toDouble(),
-      status: json['status'] as String,
-      role: json['role'] as String,
-      tags: List<String>.from(json['tags'] as List? ?? []),
-      firstFlightDate: json['firstFlightDate'] as String,
-      lastMaintenanceTime: json['lastMaintenanceTime'] as String,
-      baseLocation: json['baseLocation'] as Map<String, dynamic>,
-      specs: json['specs'] as Map<String, dynamic>,
-      conflicts:
-          List<Map<String, dynamic>>.from(json['conflicts'] as List? ?? []),
-      metadata: Map<String, String>.from(json['metadata'] as Map? ?? {}),
+      emptyWeightKg: emptyWeightKg.toDouble(),
+      status: status,
+      role: role,
+      tags: tags,
+      firstFlightDate: firstFlightDate,
+      lastMaintenanceTime: lastMaintenanceTime,
+      baseLocation: baseLocation,
+      specs: specs,
+      conflicts: conflicts,
+      metadata: metadata,
       estimatedUnitsProduced: json['estimatedUnitsProduced'] as int?,
       estimatedActiveUnits: json['estimatedActiveUnits'] as int?,
       photoUrl: json['photoUrl'] as String?,
+      manualArchive: manualArchive,
     );
   }
 }
