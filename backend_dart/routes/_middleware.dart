@@ -1,8 +1,13 @@
-import 'package:backend_dart/store/aircraft_store.dart';
+import 'dart:io';
+
+import 'package:backend_dart/repositories/aircraft_repository.dart';
+import 'package:backend_dart/repositories/sqlite_aircraft_repository.dart';
 import 'package:dart_frog/dart_frog.dart';
 
-final _store = AircraftStore();
+final _repository = SqliteAircraftRepository(
+  databasePath: Platform.environment['DB_PATH'] ?? 'data/aircraft.db',
+);
 
 Handler middleware(Handler handler) {
-  return handler.use(provider<AircraftStore>((_) => _store));
+  return handler.use(provider<AircraftRepository>((_) => _repository));
 }
