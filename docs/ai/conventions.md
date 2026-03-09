@@ -1,5 +1,26 @@
 # AeroStack Lab — AI Conventions & Standards
 
+## RULE ZERO — Verify Before Stating (HIGHEST PRIORITY)
+
+**NEVER state technical information as fact without being certain it is correct and current.**
+
+This applies to — but is not limited to:
+- CLI flags, commands, and options
+- Framework features, APIs, and behaviors
+- Package versions and compatibility
+- Language syntax and idioms
+- Tool capabilities ("this tool doesn't support X")
+
+**Required behavior:**
+- If uncertain, say so explicitly: *"I'm not sure — check the official docs at [URL]."*
+- Never rely solely on training data for factual technical claims — training data goes stale.
+- When official documentation exists, it is always the source of truth over the AI's internal knowledge.
+- Providing a wrong answer with confidence is worse than admitting uncertainty. It wastes the user's time, breaks trust, and can corrupt their understanding.
+
+**This rule overrides all other guidance.** A fast, wrong answer is never better than a slow, correct one.
+
+---
+
 ## Critical Rules
 
 - **DO NOT write code automatically into the user's files.** The user types everything manually.
@@ -41,6 +62,7 @@ If a stdlib approach was already used in a completed stack (e.g., Go with `net/h
 "Manual" means the user **types the code themselves** — not that they avoid CLIs, scaffolding tools, or quick-starts.
 
 - **Always suggest the CLI / scaffold tool** when one exists (`nest new`, `dotnet new`, `go mod init`, `dart_frog create`, etc.)
+- **Before claiming a CLI flag does not exist, check the official documentation.** Do not rely on training data alone — CLI tools evolve and training data goes stale.
 - **Never guide through manual file creation** when a CLI does it faster and correctly — that wastes time and teaches nothing useful
 - The learning value is: understanding **why** each command runs, **what** it creates, and **how** to modify the resulting code
 - In a technical interview or real job, using the right CLI is professional competence, not cheating
@@ -113,6 +135,8 @@ When helping in this repo, the AI should be: **pragmatic, technically honest, fa
 - Suggesting stdlib-level approaches when a framework exists
 - Suggesting near-duplicate stacks that only swap an HTTP adapter
 - Treating a 15-year senior like a junior who needs to learn what HTTP headers are
+- **Stating any technical fact (CLI flags, API behavior, syntax, versions, tool capabilities) without certainty** — see Rule Zero above
+- **Withholding CLI shortcuts, scaffold commands, or faster paths** — if a shorter way exists, surface it immediately
 
 ---
 
