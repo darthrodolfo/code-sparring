@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:backend_dart/repositories/aircraft_repository.dart';
 import 'package:backend_dart/models/aircraft.dart';
-import 'package:backend_dart/store/aircraft_store.dart';
 import 'package:dart_frog/dart_frog.dart';
 import 'package:decimal/decimal.dart';
 import 'package:uuid/uuid.dart';
@@ -36,14 +36,14 @@ Future<Response> onAircraftItem(RequestContext context, String id) {
 }
 
 Response _getAll(RequestContext context) {
-  final store = context.read<AircraftStore>();
+  final store = context.read<AircraftRepository>();
   return Response.json(
     body: store.getAll().map((a) => a.toJson()).toList(),
   );
 }
 
 Response _getById(RequestContext context, String id) {
-  final store = context.read<AircraftStore>();
+  final store = context.read<AircraftRepository>();
   final aircraft = store.getById(id);
   if (aircraft == null) {
     return _jsonError(HttpStatus.notFound, 'Aircraft not found');
@@ -55,7 +55,7 @@ Future<Response> _create(
   RequestContext context, {
   required String basePath,
 }) async {
-  final store = context.read<AircraftStore>();
+  final store = context.read<AircraftRepository>();
   final dtoOrError = await _readDto(context);
   if (dtoOrError.error != null) {
     return _jsonError(HttpStatus.badRequest, dtoOrError.error!);
@@ -76,7 +76,7 @@ Future<Response> _create(
 }
 
 Future<Response> _update(RequestContext context, String id) async {
-  final store = context.read<AircraftStore>();
+  final store = context.read<AircraftRepository>();
   if (store.getById(id) == null) {
     return _jsonError(HttpStatus.notFound, 'Aircraft not found');
   }
@@ -97,7 +97,7 @@ Future<Response> _update(RequestContext context, String id) async {
 }
 
 Response _delete(RequestContext context, String id) {
-  final store = context.read<AircraftStore>();
+  final store = context.read<AircraftRepository>();
   if (!store.delete(id)) {
     return _jsonError(HttpStatus.notFound, 'Aircraft not found');
   }
@@ -138,7 +138,8 @@ _AircraftMapResult _fromDto(String id, CreateAircraftRequest dto) {
   final role = AircraftRole.values.asNameMap()[dto.role];
   if (role == null) {
     return const _AircraftMapResult(
-      error: 'role must be one of: fighter, bomber, transport, reconnaissance, trainer, drone',
+      error:
+          'role must be one of: fighter, bomber, transport, reconnaissance, trainer, drone',
     );
   }
 
