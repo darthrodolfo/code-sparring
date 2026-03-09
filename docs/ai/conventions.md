@@ -113,3 +113,86 @@ When helping in this repo, the AI should be: **pragmatic, technically honest, fa
 - Suggesting stdlib-level approaches when a framework exists
 - Suggesting near-duplicate stacks that only swap an HTTP adapter
 - Treating a 15-year senior like a junior who needs to learn what HTTP headers are
+
+---
+
+## Agent Exclusion List (AI .gitignore)
+
+**NEVER read, write, modify, or analyze files in the directories and patterns listed below.** These are generated artifacts, build outputs, dependency caches, and temporary files. Reading them wastes tokens, slows down responses, and risks modifying auto-generated code that will be overwritten.
+
+### Universal Exclusions
+
+| Pattern | Reason |
+|---------|--------|
+| `.git/` | Git internals |
+| `*.db`, `*.sqlite`, `*.sqlite3` | Database files (binary) |
+| `.env`, `.env.*` | Secrets / environment variables |
+| `.DS_Store`, `Thumbs.db` | OS metadata |
+| `*.log` | Log files |
+| `coverage/` | Test coverage reports |
+
+### C# / .NET
+
+| Pattern | Reason |
+|---------|--------|
+| `bin/` | Compiled output |
+| `obj/` | Intermediate build artifacts |
+| `.vs/` | Visual Studio IDE metadata |
+| `*.user`, `*.suo` | User-specific IDE settings |
+| `*.dll`, `*.exe`, `*.pdb` | Compiled binaries and debug symbols |
+| `packages/` | NuGet package cache (legacy) |
+
+### Python
+
+| Pattern | Reason |
+|---------|--------|
+| `__pycache__/` | Bytecode cache |
+| `*.pyc`, `*.pyo` | Compiled Python files |
+| `.venv/`, `venv/`, `env/`, `.env/` | Virtual environments |
+| `.mypy_cache/` | Type checker cache |
+| `.pytest_cache/` | Test runner cache |
+| `.ruff_cache/` | Linter cache |
+| `*.egg-info/`, `dist/` | Distribution artifacts |
+
+### Go
+
+| Pattern | Reason |
+|---------|--------|
+| `vendor/` | Vendored dependencies (if present) |
+| `*.exe`, `*.test` | Compiled binaries |
+
+### Node.js / TypeScript (NestJS, Fastify, etc.)
+
+| Pattern | Reason |
+|---------|--------|
+| `node_modules/` | Dependency tree (can be massive) |
+| `dist/` | Compiled/transpiled output |
+| `.nest/` | NestJS cache |
+| `.next/` | Next.js build output |
+| `*.tsbuildinfo` | TypeScript incremental build info |
+| `.npm/`, `.yarn/`, `.pnp.*` | Package manager caches |
+
+### Dart
+
+| Pattern | Reason |
+|---------|--------|
+| `.dart_tool/` | Dart toolchain cache |
+| `build/` | Dart Frog / Dart build output |
+| `.packages` | Legacy package resolution |
+| `.pub-cache/` | Pub package cache |
+
+### Java / Spring Boot
+
+| Pattern | Reason |
+|---------|--------|
+| `target/` | Maven build output |
+| `build/` | Gradle build output |
+| `.gradle/` | Gradle cache |
+| `.idea/` | IntelliJ IDE metadata |
+| `*.class`, `*.jar`, `*.war` | Compiled Java artifacts |
+| `.mvn/wrapper/` | Maven wrapper (binary) |
+| `gradle/wrapper/` | Gradle wrapper (binary) |
+
+### Rule of Thumb
+
+If in doubt, ask: **"Did a human write this file, or did a tool generate it?"** If the answer is the latter, do not read or modify it. Focus on source code, configuration files authored by the user, and documentation.
