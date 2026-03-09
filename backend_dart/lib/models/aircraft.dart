@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:decimal/decimal.dart';
 
 enum AircraftRole { fighter, bomber, transport, reconnaissance, trainer, drone }
 
@@ -12,8 +12,8 @@ class GeoLocation {
 
   factory GeoLocation.fromJson(Map<String, dynamic> json) {
     return GeoLocation(
-      latitude: json[latitude] as double,
-      longitude: json[longitude] as double,
+      latitude: json['latitude'] as double,
+      longitude: json['longitude'] as double,
     );
   }
 
@@ -83,14 +83,13 @@ class ConflictHistory {
       };
 }
 
-@immutable
 class Aircraft {
   final String id;
   final String model;
   final String manufacturer;
   final String? serialNumber;
   final int yearOfManufacture;
-  final double priceMillions;
+  final Decimal priceMillions;
   final double emptyWeightKg;
   final AircraftStatus status;
   final AircraftRole role;
@@ -106,7 +105,7 @@ class Aircraft {
   final String? photoUrl;
   final List<int>? manualArchive;
 
-  const Aircraft({
+  Aircraft({
     required this.id,
     required this.model,
     required this.manufacturer,
@@ -116,18 +115,21 @@ class Aircraft {
     required this.emptyWeightKg,
     required this.status,
     required this.role,
-    required this.tags,
+    required List<String> tags,
     required this.firstFlightDate,
     required this.lastMaintenanceTime,
     required this.baseLocation,
     required this.specs,
-    required this.conflicts,
+    required List<ConflictHistory> conflicts,
     required this.metadata,
     this.estimatedUnitsProduced,
     this.estimatedActiveUnits,
     this.photoUrl,
-    this.manualArchive,
-  });
+    List<int>? manualArchive,
+  })  : tags = List.unmodifiable(tags),
+        conflicts = List.unmodifiable(conflicts),
+        manualArchive =
+            manualArchive != null ? List.unmodifiable(manualArchive) : null;
 
   factory Aircraft.fromJson(Map<String, dynamic> json) {
     return Aircraft(
@@ -136,14 +138,20 @@ class Aircraft {
       manufacturer: json['manufacturer'] as String,
       serialNumber: json['serialNumber'] as String?,
       yearOfManufacture: json['yearOfManufacture'] as int,
-      priceMillions: (json['priceMillions'] as num).toDouble(),
+      priceMillions: Decimal.parse(json['priceMillions'].toString()),
       emptyWeightKg: (json['emptyWeightKg'] as num).toDouble(),
-      status: AircraftStatus.values.firstWhere(
-        (e) => e.name == (json['status'] as String),
-      ),
-      role: AircraftRole.values.firstWhere(
-        (e) => e.name == (json['role'] as String),
-      ),
+      status: AircraftStatus.values.asNameMap()[json['status'] as String] ??
+          (throw ArgumentError.value(
+            json['status'],
+            'status',
+            'Must be one of: ${AircraftStatus.values.map((e) => e.name).join(', ')}',
+          )),
+      role: AircraftRole.values.asNameMap()[json['role'] as String] ??
+          (throw ArgumentError.value(
+            json['role'],
+            'role',
+            'Must be one of: ${AircraftRole.values.map((e) => e.name).join(', ')}',
+          )),
       tags: List<String>.from(json['tags'] as List),
       firstFlightDate: DateTime.parse(json['firstFlightDate'] as String),
       lastMaintenanceTime:
@@ -170,7 +178,7 @@ class Aircraft {
         'manufacturer': manufacturer,
         'serialNumber': serialNumber,
         'yearOfManufacture': yearOfManufacture,
-        'priceMillions': priceMillions,
+        'priceMillions': priceMillions.toString(),
         'emptyWeightKg': emptyWeightKg,
         'status': status.name,
         'role': role.name,
@@ -193,7 +201,7 @@ class CreateAircraftRequest {
   final String manufacturer;
   final String? serialNumber;
   final int yearOfManufacture;
-  final double priceMillions;
+  final String priceMillions;
   final double emptyWeightKg;
   final String status;
   final String role;
@@ -235,7 +243,7 @@ class CreateAircraftRequest {
       manufacturer: json['manufacturer'] as String,
       serialNumber: json['serialNumber'] as String?,
       yearOfManufacture: json['yearOfManufacture'] as int,
-      priceMillions: (json['priceMillions'] as num).toDouble(),
+      priceMillions: json['priceMillions'].toString(),
       emptyWeightKg: (json['emptyWeightKg'] as num).toDouble(),
       status: json['status'] as String,
       role: json['role'] as String,

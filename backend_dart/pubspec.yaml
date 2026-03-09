@@ -8,6 +8,8 @@ environment:
 
 dependencies:
   dart_frog: ^1.1.0
+  decimal: ^3.2.4
+  uuid: ^4.5.3
 
 dev_dependencies:
   dart_frog_lint: ^0.1.0

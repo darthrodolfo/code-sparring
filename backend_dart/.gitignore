@@ -1,3 +1,31 @@
-.dart_frog/
+# See https://www.dartlang.org/guides/libraries/private-files
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Pub & Dart
 .dart_tool/
-build/.dart_tool/
+.packages
+.pub-cache/
+.pub/
+# pubspec.lock 
+
+# Dart Frog - Onde o problema aconteceu
+**/build/
+.dart_frog/
+
+# IDEs & Editor
+.vscode/
+.idea/
+*.swp
+*.lock
+.history/
+
+# Logs e Temporários
+*.log
+tmp/
+
+# Test
+coverage/
