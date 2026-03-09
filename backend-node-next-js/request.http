@@ -1,0 +1,67 @@
+@baseUrl = http://localhost:3000
+
+### Health / Decolamos
+GET {{baseUrl}}/decolamos
+
+### List Aircraft
+GET {{baseUrl}}/aircraft
+
+### Get Aircraft by ID
+GET {{baseUrl}}/aircraft/REPLACE_WITH_ID
+
+### Create Aircraft (full payload)
+POST {{baseUrl}}/aircraft
+Content-Type: application/json
+
+{
+  "model": "F-22 Raptor",
+  "manufacturer": "Lockheed Martin",
+  "year": 2005,
+  "status": "Active",
+  "category": "Fighter",
+  "maxSpeedKph": 1960,
+  "ceilingMeters": 19812,
+  "rangeKm": 2960,
+  "engineCount": 2,
+  "engineModel": "Pratt & Whitney F119",
+  "wingspanMeters": 13.56,
+  "emptyWeightKg": 19700,
+  "maxTakeoffWeightKg": 38000,
+  "countryOfOrigin": "USA",
+  "isStealthCapable": true,
+  "tags": ["stealth", "supercruise", "5th-gen"],
+  "firstFlightDate": "1997-09-07",
+  "description": "The F-22 Raptor is a fifth-generation, single-seat, twin-engine, all-weather stealth tactical fighter aircraft developed for the United States Air Force (USAF).",
+  "conflictHistory": [
+    { "conflictName": "Operation Inherent Resolve", "startYear": 2014, "role": "Air superiority" }
+  ]
+}
+
+### Create Aircraft (minimal required fields only)
+POST {{baseUrl}}/aircraft
+Content-Type: application/json
+
+{
+  "model": "MQ-9 Reaper",
+  "manufacturer": "General Atomics",
+  "year": 2007,
+  "status": "Active",
+  "category": "Drone",
+  "engineCount": 1,
+  "countryOfOrigin": "USA",
+  "isStealthCapable": false,
+  "tags": ["UAV", "ISR"],
+  "conflictHistory": []
+}
+
+### Update Aircraft
+PUT {{baseUrl}}/aircraft/REPLACE_WITH_ID
+Content-Type: application/json
+
+{
+  "status": "Maintenance",
+  "tags": ["stealth", "supercruise", "5th-gen", "upgraded"]
+}
+
+### Delete Aircraft
+DELETE {{baseUrl}}/aircraft/REPLACE_WITH_ID

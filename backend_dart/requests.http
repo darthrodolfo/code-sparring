@@ -1,0 +1,108 @@
+@host = http://localhost:8080
+
+### Health
+GET {{host}}/decolamos
+
+### List all aircraft (v2)
+GET {{host}}/aircraft-v2
+
+### Create aircraft (v2)
+# @name createAircraft
+POST {{host}}/aircraft-v2
+Content-Type: application/json
+
+{
+  "model": "A-10 Thunderbolt II",
+  "manufacturer": "Fairchild Republic",
+  "serialNumber": "AF-77-0255",
+  "yearOfManufacture": 1977,
+  "priceMillions": "18.50",
+  "emptyWeightKg": 11300.5,
+  "status": "active",
+  "role": "fighter",
+  "tags": ["close-air-support", "legacy"],
+  "firstFlightDate": "1972-05-10T00:00:00Z",
+  "lastMaintenanceTime": "2026-03-08T18:00:00Z",
+  "baseLocation": {
+    "latitude": 34.9054,
+    "longitude": -117.8830
+  },
+  "specs": {
+    "maxSpeedKmh": 706,
+    "wingspanMeters": 17.53,
+    "rangeKm": 4150,
+    "maxAltitudeMeters": 13700,
+    "flightEndurance": 3600000000
+  },
+  "conflicts": [
+    {
+      "name": "Gulf War",
+      "startYear": 1990,
+      "endYear": 1991
+    }
+  ],
+  "metadata": {
+    "origin": "usaf",
+    "version": "v2"
+  },
+  "estimatedUnitsProduced": 716,
+  "estimatedActiveUnits": 281,
+  "photoUrl": "https://example.com/aircraft/a10.jpg",
+  "manualArchive": [1, 2, 3, 4]
+}
+
+### Save created id for next requests
+@aircraftId = {{createAircraft.response.body.$.id}}
+
+### Get by id (v2)
+GET {{host}}/aircraft-v2/{{aircraftId}}
+
+### Update by id (v2)
+PUT {{host}}/aircraft-v2/{{aircraftId}}
+Content-Type: application/json
+
+{
+  "model": "A-10 Thunderbolt II Updated",
+  "manufacturer": "Fairchild Republic",
+  "serialNumber": "AF-77-0255",
+  "yearOfManufacture": 1977,
+  "priceMillions": "19.25",
+  "emptyWeightKg": 11400.0,
+  "status": "maintenance",
+  "role": "fighter",
+  "tags": ["close-air-support", "updated"],
+  "firstFlightDate": "1972-05-10T00:00:00Z",
+  "lastMaintenanceTime": "2026-03-09T09:15:00Z",
+  "baseLocation": {
+    "latitude": 34.9054,
+    "longitude": -117.8830
+  },
+  "specs": {
+    "maxSpeedKmh": 706,
+    "wingspanMeters": 17.53,
+    "rangeKm": 4150,
+    "maxAltitudeMeters": 13700,
+    "flightEndurance": 5400000000
+  },
+  "conflicts": [
+    {
+      "name": "Gulf War",
+      "startYear": 1990,
+      "endYear": 1991
+    }
+  ],
+  "metadata": {
+    "origin": "usaf",
+    "version": "v2-updated"
+  },
+  "estimatedUnitsProduced": 716,
+  "estimatedActiveUnits": 280,
+  "photoUrl": "https://example.com/aircraft/a10-updated.jpg",
+  "manualArchive": [10, 20, 30]
+}
+
+### Delete by id (v2)
+DELETE {{host}}/aircraft-v2/{{aircraftId}}
+
+### Confirm deleted (expect 404)
+GET {{host}}/aircraft-v2/{{aircraftId}}

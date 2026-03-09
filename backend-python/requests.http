@@ -1,0 +1,155 @@
+### Health Check
+GET http://localhost:8000/decolamos
+
+### List Aircraft
+GET http://localhost:8000/aircraft-v2
+
+### Create Aircraft
+POST http://localhost:8000/aircraft
+Content-Type: application/json
+
+{
+  "model": "F-16C",
+  "manufacturer": "Lockheed Martin",
+  "year": 1991
+}
+
+### Create Aircraft — edge case: earliest valid year
+POST http://localhost:8000/aircraft
+Content-Type: application/json
+
+{
+  "model": "Wright Flyer",
+  "manufacturer": "Wright Brothers",
+  "year": 1903
+}
+
+### Create Aircraft — should fail: year too old
+POST http://localhost:8000/aircraft
+Content-Type: application/json
+
+{
+  "model": "Invalid",
+  "manufacturer": "Nobody",
+  "year": 1800
+}
+
+### Create Aircraft — should fail: empty model
+POST http://localhost:8000/aircraft
+Content-Type: application/json
+
+{
+  "model": "",
+  "manufacturer": "Test",
+  "year": 2020
+}
+
+### Create AircraftV2 — full payload
+POST http://localhost:8000/aircraft-v2
+Content-Type: application/json
+
+{
+  "model": "F-22A Raptor",
+  "manufacturer": "Lockheed Martin",
+  "serial_number": "LM-F22-001",
+  "year_of_manufacture": 2005,
+  "price_millions": 143.6,
+  "empty_weight_kg": 19700.5,
+  "status": "Active",
+  "role": "Fighter",
+  "tags": ["stealth", "5th-gen", "supercruise"],
+  "first_flight_date": "1997-09-07",
+  "last_maintenance_time": "2025-11-01T08:30:00+00:00",
+  "base_location": {
+    "latitude": 30.4058,
+    "longitude": -86.4764
+  },
+  "specs": {
+    "max_speed_kmh": 1960,
+    "wingspan_meters": 13.56,
+    "range_km": 2960,
+    "max_altitude_meters": 19812,
+    "flight_endurance": 18000
+  },
+  "conflicts": [
+    {
+      "name": "Operation Iraqi Freedom",
+      "start_year": 2003,
+      "end_year": 2011
+    }
+  ],
+  "metadata": {
+    "classification": "5th Generation",
+    "program": "ATF"
+  },
+  "estimated_units_produced": 187,
+  "estimated_active_units": 183,
+  "photo_url": "https://example.com/f22.jpg",
+  "manual_archive": "U3RlYWx0aCBtYW51YWw="
+}
+
+### Create AircraftV2 — nullable fields omitted
+POST http://localhost:8000/aircraft-v2
+Content-Type: application/json
+
+{
+  "model": "MQ-9 Reaper",
+  "manufacturer": "General Atomics",
+  "year_of_manufacture": 2007,
+  "price_millions": 32.0,
+  "empty_weight_kg": 2223.0,
+  "status": "Active",
+  "role": "Drone",
+  "tags": ["uav", "surveillance"],
+  "first_flight_date": "2001-02-02",
+  "last_maintenance_time": "2025-10-15T14:00:00+00:00",
+  "base_location": {
+    "latitude": 36.2354,
+    "longitude": -115.0339
+  },
+  "specs": {
+    "max_speed_kmh": 482,
+    "wingspan_meters": 20.12,
+    "range_km": 1852,
+    "flight_endurance": 57600
+  },
+  "conflicts": [],
+  "metadata": {}
+}
+
+### Get AircraftV2 by ID (Replace ID)
+GET http://localhost:8000/aircraft-v2/00000000-0000-0000-0000-000000000000
+
+### Update AircraftV2 (Replace ID)
+PUT http://localhost:8000/aircraft-v2/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "model": "F-22B Raptor (Updated)",
+  "manufacturer": "Lockheed Martin",
+  "year_of_manufacture": 2010,
+  "price_millions": 150.0,
+  "empty_weight_kg": 19700.5,
+  "status": "Maintenance",
+  "role": "Fighter",
+  "tags": ["stealth", "5th-gen", "updated"],
+  "first_flight_date": "1997-09-07",
+  "last_maintenance_time": "2026-01-01T10:00:00+00:00",
+  "base_location": {
+    "latitude": 30.4058,
+    "longitude": -86.4764
+  },
+  "specs": {
+    "max_speed_kmh": 2410,
+    "wingspan_meters": 13.56,
+    "range_km": 3000,
+    "flight_endurance": 18000
+  },
+  "conflicts": [],
+  "metadata": {
+    "classification": "Top Secret"
+  }
+}
+
+### Delete AircraftV2 (Replace ID)
+DELETE http://localhost:8000/aircraft-v2/00000000-0000-0000-0000-000000000000
