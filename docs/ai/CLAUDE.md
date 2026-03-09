@@ -1,10 +1,10 @@
-# CLAUDE.md — AeroStack Lab (Code-Sparring)
+# claude.md — AeroStack Lab (Code-Sparring)
 
-> This file contains essential behavioral rules for Claude Code. For detailed project context, see the modular AI documentation below or load [AGENT.md](AGENT.md).
+> This file contains essential behavioral rules for Claude Code. For detailed project context, see the modular AI documentation below or load [agent.md](agent.md).
 
 ## AI Documentation Index
 
-- **[AGENT.md](AGENT.md)** — Bootstrap entry point for any AI agent
+- **[agent.md](agent.md)** — Bootstrap entry point for any AI agent
 - **[context.md](context.md)** — Project vision, learning objectives, user profile
 - **[architecture.md](architecture.md)** — Stack plan, tech choices, domain model
 - **[services.md](services.md)** — Service registry, ports, commands, key files

@@ -1,4 +1,4 @@
-# AGENT.md — AeroStack Lab (Code-Sparring)
+# agent.md — AeroStack Lab (Code-Sparring)
 
 > Bootstrap entry point for AI agents. Start here, then load modules as needed.
 
@@ -20,7 +20,7 @@ This is a **learning and experimentation project**, not a production system.
 
 ## Entry Point for Claude Code
 
-See [CLAUDE.md](CLAUDE.md) for Claude Code-specific behavioral rules.
+See [claude.md](claude.md) for Claude Code-specific behavioral rules.
 
 ## Study Documentation (reference only)
 
