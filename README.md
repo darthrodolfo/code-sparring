@@ -12,7 +12,7 @@ One domain. Multiple ecosystems. Same contract. Every backend exposes the same A
 | **Python** | FastAPI + Pydantic v2 | SQLite (aiosqlite) | 8000 |
 | **Go** | stdlib (net/http) | SQLite (go-sqlite3) | 8080 |
 | **Node.js / TypeScript** | NestJS + Express | SQLite (better-sqlite3) | 3000 |
-| **Dart** | Dart Frog | — | 8080 |
+| **Dart** | Dart Frog | SQLite (sqlite3/dart:ffi) | 8080 |
 
 Each stack follows the same progression: **scaffold → rich entity modeling → full CRUD → SQLite persistence** with schema design, transactions, and domain-to-DB mapping.
 
@@ -78,7 +78,7 @@ aerostack-lab/
 ├── backend-python/            FastAPI + Pydantic v2 — CRUD + SQLite
 ├── backend-go/                Go stdlib — CRUD + SQLite
 ├── backend-node-next-js/      NestJS + Express + TypeScript — CRUD + SQLite
-├── backend_dart/              Dart Frog — entity modeling
+├── backend_dart/              Dart Frog — CRUD + SQLite
 ├── docs/
 │   ├── ai/                    AI agent context modules
 │   └── study-docs/            Architecture specs and reference materials
