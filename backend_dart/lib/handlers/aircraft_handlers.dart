@@ -11,21 +11,28 @@ const _uuid = Uuid();
 Future<Response> onAircraftCollection(
   RequestContext context, {
   required String basePath,
-}) async {
-  return switch (context.request.method) {
-    HttpMethod.get => _getAll(context),
-    HttpMethod.post => _create(context, basePath: basePath),
-    _ => Future.value(Response(statusCode: HttpStatus.methodNotAllowed)),
-  };
+}) {
+  switch (context.request.method) {
+    case HttpMethod.get:
+      return Future.value(_getAll(context));
+    case HttpMethod.post:
+      return _create(context, basePath: basePath);
+    default:
+      return Future.value(Response(statusCode: HttpStatus.methodNotAllowed));
+  }
 }
 
-Future<Response> onAircraftItem(RequestContext context, String id) async {
-  return switch (context.request.method) {
-    HttpMethod.get => Future.value(_getById(context, id)),
-    HttpMethod.put => _update(context, id),
-    HttpMethod.delete => Future.value(_delete(context, id)),
-    _ => Future.value(Response(statusCode: HttpStatus.methodNotAllowed)),
-  };
+Future<Response> onAircraftItem(RequestContext context, String id) {
+  switch (context.request.method) {
+    case HttpMethod.get:
+      return Future.value(_getById(context, id));
+    case HttpMethod.put:
+      return _update(context, id);
+    case HttpMethod.delete:
+      return Future.value(_delete(context, id));
+    default:
+      return Future.value(Response(statusCode: HttpStatus.methodNotAllowed));
+  }
 }
 
 Response _getAll(RequestContext context) {
