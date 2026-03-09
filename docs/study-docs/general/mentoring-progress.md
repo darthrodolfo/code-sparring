@@ -59,10 +59,12 @@
 - OnModuleInit lifecycle hook for schema initialization
 - Exception-based error handling (NotFoundException -> 404 automatic)
 
-### Dart (Dart Frog) — In Progress
+### Dart (Dart Frog) — Phase 1 COMPLETE
 
 - Framework: Dart Frog (Very Good Ventures) — file-based routing, CLI scaffolding
-- Target: Phase 0 -> CRUD -> SQLite -> stop
+- Boot completed (project scaffold, local run, first routes)
+- Phase 1 fundamentals completed (rich model/DTO flow, JSON handling, basic validation and request/response mapping)
+- Current checkpoint: paused before Phase 2 (full CRUD) and Phase 3 (SQLite)
 - Port: 8080
 
 ---

@@ -101,7 +101,7 @@ For detailed conventions, mentoring protocol, and code standards → see [conven
 - **Python:** Round 1 COMPLETE (CRUD + SQLite)
 - **Go:** Round 1 COMPLETE (CRUD + SQLite)
 - **Node.js / NestJS:** Round 1 COMPLETE (CRUD + SQLite) — stop-point reached
-- **Dart (Dart Frog):** In Progress (Phase 0)
+- **Dart (Dart Frog):** Phase 1 COMPLETE (paused before CRUD/SQLite)
 - **Node.js puro + Fastify:** Planned
 - **Java / Spring Boot:** Planned
 
