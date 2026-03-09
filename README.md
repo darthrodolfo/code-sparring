@@ -1,74 +1,57 @@
-# AeroStack Lab (Code-Sparring)
+# AeroStack Lab
 
-Polyglot backend engineering training ground. The same rich **Aircraft** domain (20-field entity with enums, nested types, collections, decimals, dates, and binary payloads) is implemented across multiple technology stacks to compare language idioms, framework DX, persistence patterns, and architectural clarity.
+**Polyglot backend architecture comparison + AI-integrated engineering** — the same rich domain implemented across multiple stacks to evaluate language ergonomics, framework DX, and persistence patterns, then extended with production-grade AI capabilities on the flagship C# / .NET backend.
 
-This is a **learning and experimentation project**, not a production system. Development follows a challenge-first "sparring" approach with AI-assisted mentoring.
+One domain. Multiple ecosystems. Same contract. Every backend exposes the same API shape over a deliberately complex **Aircraft** entity (20 fields spanning enums, nested types, nullable values, decimals, dates, durations, collections, and binary payloads). The entity surfaces real-world friction that trivial CRUD demos never reveal: serialization edge cases, DTO separation, null-safety discipline, and persistence mapping. The .NET implementation then goes further — integrating LLM orchestration, RAG pipelines, and AI-powered features as first-class architectural components.
 
-## Project Structure
+## Implemented Stacks
 
-```
-code-sparring/
-├── backend-csharp/          # .NET 9 Minimal API
-├── backend-python/          # FastAPI + Pydantic v2
-├── backend-go/              # Go stdlib (net/http)
-├── backend-node-next-js/    # NestJS + Express + TypeScript
-├── backend_dart/            # Dart Frog
-├── docs/
-│   ├── ai/                  # AI agent context (start at agent.md)
-│   └── study-docs/          # Personal study notes and references
-└── README.md
-```
+| Stack | Framework | Persistence | Port |
+|-------|-----------|-------------|------|
+| **C# / .NET 9** | Minimal API | SQLite | 5202 |
+| **Python** | FastAPI + Pydantic v2 | SQLite (aiosqlite) | 8000 |
+| **Go** | stdlib (net/http) | SQLite (go-sqlite3) | 8080 |
+| **Node.js / TypeScript** | NestJS + Express | SQLite (better-sqlite3) | 3000 |
+| **Dart** | Dart Frog | — | 8080 |
 
-## Backend Safari
+Each stack follows the same progression: **scaffold → rich entity modeling → full CRUD → SQLite persistence** with schema design, transactions, and domain-to-DB mapping.
 
-Each stack goes through the same progression — **scaffold → rich entity → CRUD → SQLite** — then stops. The goal is comparative learning, not building N production systems.
+## Cross-Stack Comparison
 
-| Stack | Framework | Port | Status |
-|-------|-----------|------|--------|
-| C# / .NET 9 | Minimal API | 5202 | Round 1 COMPLETE (CRUD + SQLite) |
-| Python | FastAPI / Pydantic v2 | 8000 | Round 1 COMPLETE (CRUD + SQLite) |
-| Go | stdlib (net/http) | 8080 | Round 1 COMPLETE (CRUD + SQLite) |
-| Node.js | NestJS + Express | 3000 | Round 1 COMPLETE (CRUD + SQLite) |
-| Dart | Dart Frog | 8080 | Phase 1 COMPLETE (paused before CRUD) |
-| Node.js puro | Fastify | — | Planned |
-| Java | Spring Boot | — | Planned |
-
-### Safari Phases
-
-| Phase | Scope |
-|-------|-------|
-| Phase 0 | Project scaffold, health endpoint, first request |
-| Phase 1 | Data models, JSON serialization, validation, language idioms |
-| Phase 2 | Full CRUD (GET all, GET by id, POST, PUT, DELETE) |
-| Phase 3 | SQLite persistence, schema, repository layer |
-
-After the safari completes, C# / .NET returns as the **flagship premium backend** with advanced rounds (auth, caching, AI integrations, observability, Postgres).
+| Dimension | C# / .NET 9 | Python | Go | Node.js / NestJS |
+|-----------|-------------|--------|----|-------------------|
+| **Validation** | Minimal API model binding | Pydantic v2 field validators | Manual struct validation | class-validator decorators |
+| **Nullability** | `T?` nullable types | `str \| None` (3.10+) | Pointers (`*string`, `*int`) | `?` optional fields |
+| **Enum strategy** | Native enum + `JsonStringEnumConverter` | `(str, Enum)` dual-inherit | Type alias + `const` iota | TypeScript `enum` (string values) |
+| **DI / Wiring** | Built-in DI container | FastAPI `Depends` | Manual (no framework DI) | `@Module` / `@Injectable` |
+| **DB access** | Raw SQL + Microsoft.Data.Sqlite | aiosqlite (async) | `database/sql` + transactions | better-sqlite3 (sync) |
+| **DTO separation** | Record types (request/response) | Pydantic models (in/out) | Separate structs | class-validator classes + `PartialType` |
+| **ID generation** | `Guid.CreateVersion7()` | `uuid4()` | `google/uuid` | `crypto.randomUUID()` |
+| **Decimal handling** | Native `decimal` | `Decimal` → string serialization | `shopspring/decimal` → string | `number` (IEEE 754) |
 
 ## Domain Model — AircraftV2
 
-A deliberately rich entity (20 fields) chosen to stress-test each language's type system:
+A reference entity engineered to expose typing quality, serialization friction, and persistence complexity across ecosystems:
 
-- **Primitives:** integers, floats, high-precision decimals, booleans
-- **Strings & Enums:** `AircraftRole`, `AircraftStatus` (replaces primitive bool flags)
-- **Dates:** date-only, datetime with timezone, durations
-- **Nullable types:** both value and reference types
-- **Collections:** lists (tags), maps
-- **Nested types:** `GeoLocation`, `AircraftSpecs`, `ConflictHistory`
-- **Binary:** image/audio payloads, URIs, UUIDs
+- **Enums:** `AircraftRole`, `AircraftStatus` — replaces primitive `bool` flags (anti-primitive-obsession)
+- **Nested types:** `GeoLocation`, `AircraftSpecs`, `ConflictHistory` (with `StartYear`/`EndYear`, not stringly-typed `Duration`)
+- **Nullable semantics:** both value and reference type nullability per language
+- **High-precision numerics:** `decimal` / `Decimal` for financial-grade fields
+- **Temporal types:** date-only, datetime with timezone, durations (ISO 8601 / TimeSpan)
+- **Collections:** `IReadOnlyList<string>` (domain) vs `List<string>` (DTO) — immutability at the boundary
+- **Binary:** image/audio payload paths, URIs, UUIDs
 
-Full specification: [implementation-plan.md](docs/study-docs/general/implementation-plan.md)
+## Architecture Principles
 
-## Engineering Principles
+- **Strong typing & encapsulation** — language primitives used correctly, immutability enforced, internal mutable state never exposed
+- **Strict input validation** — normalized and validated early via dedicated DTOs, not domain models
+- **Consistent API surface** — correct HTTP status codes, `Location` headers for created resources, uniform error shapes
+- **No stringly-typed design** — proper enums and typed nested records over raw strings and maps
+- **Monolith-first** — single-file entry points in early phases, split only when readability demands it
 
-- **Strong Typing & Encapsulation** — use language primitives correctly, enforce immutability, never expose internal mutable state
-- **Strict Validation** — input normalized and validated early via dedicated DTOs
-- **Consistent API Behavior** — correct HTTP status codes, `Location` headers, consistent error shapes
-- **No Stringly-Typed Design** — proper enums and typed fields over raw strings
-- **Monolith-First in Early Phases** — split files only when readability demands it
+## Running Any Stack
 
-## Running a Stack
-
-Each backend has a `requests.http` file (VS Code REST Client) for API testing.
+Each backend includes a `requests.http` file ([VS Code REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)) with pre-built API test cases.
 
 ```bash
 # C#
@@ -87,16 +70,49 @@ cd backend-node-next-js && npm run start:dev
 cd backend_dart && dart_frog dev
 ```
 
+## Project Structure
+
+```
+aerostack-lab/
+├── backend-csharp/            .NET 9 Minimal API — CRUD + SQLite
+├── backend-python/            FastAPI + Pydantic v2 — CRUD + SQLite
+├── backend-go/                Go stdlib — CRUD + SQLite
+├── backend-node-next-js/      NestJS + Express + TypeScript — CRUD + SQLite
+├── backend_dart/              Dart Frog — entity modeling
+├── docs/
+│   ├── ai/                    AI agent context modules
+│   └── study-docs/            Architecture specs and reference materials
+└── README.md
+```
+
+## AI Integration Layer (C# / .NET)
+
+The flagship .NET backend extends beyond CRUD into a full **AI-integrated architecture**, embedding intelligent capabilities as first-class system components — not bolted-on API wrappers.
+
+| Capability | Approach |
+|------------|----------|
+| **Chat Completion** | OpenAI / Azure OpenAI SDK — structured prompt management, conversation context, streaming responses (SSE) |
+| **Embeddings & Vector Search** | Text-to-embedding pipelines, vector storage (pgvector), cosine similarity retrieval |
+| **RAG Pipelines** | Retrieval-Augmented Generation — document ingestion, chunking strategies, context-aware LLM responses |
+| **AI Orchestration** | Semantic Kernel / Microsoft.Extensions.AI — multi-step agent workflows, function calling, tool use |
+| **Structured Output** | Type-safe LLM responses mapped to C# models — no stringly-typed prompt parsing |
+| **Content Processing** | Summarization, classification, and metadata extraction over domain entities |
+
+These integrations follow the same engineering discipline as the rest of the codebase: strong typing, clean separation of concerns, proper DI wiring, and testable abstractions over external AI services.
+
+## Roadmap
+
+| Phase | Focus |
+|-------|-------|
+| **Advanced API patterns** | Image/audio uploads (multipart + streaming), HTTP Range, pagination, filtering, sorting |
+| **Security & resilience** | Idempotency keys, rate limiting, JWT authentication |
+| **Infrastructure** | PostgreSQL + migrations, Redis caching, background processing, observability |
+| **Cloud deployment** | CI/CD pipelines, containerization, cloud-native architecture |
+
 ## For AI Agents
 
-AI context files live in [`docs/ai/`](docs/ai/). Start at [`agent.md`](docs/ai/AGENT.md) — it bootstraps all other context modules (architecture, services, phases, conventions). Claude Code-specific rules are in [`claude.md`](docs/ai/CLAUDE.md).
-
-Key rules for agents working in this repo:
-- **Do not write code into the user's files** — the user types everything manually
-- **Do not read or modify generated/build artifacts** — see the full exclusion list in [`conventions.md`](docs/ai/conventions.md)
-- **Framework-first** — always recommend frameworks over stdlib-level approaches
-- **Respect stop-points** — do not expand a safari stack beyond CRUD + SQLite
+Context modules for AI-assisted development live in [`docs/ai/`](docs/ai/). Start at [`AGENT.md`](docs/ai/AGENT.md) for the bootstrap entry point. See [`conventions.md`](docs/ai/conventions.md) for interaction rules and the **agent exclusion list** (generated directories that must not be read or modified).
 
 ---
 
-*Active mentoring and training project. Author: Rodolfo Venancio.*
+*Rodolfo Venancio — Senior Software Engineer*
