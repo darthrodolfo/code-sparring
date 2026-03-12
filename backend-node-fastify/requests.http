@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:3001
+
+### Health / Root
+GET {{baseUrl}}/
+
+### Example route
+GET {{baseUrl}}/example
+
+### Aircraft route (current path from autoload + route definition)
+GET {{baseUrl}}/aircraft
+
+### Aircraft decolamos endpoint test
+GET {{baseUrl}}/aircraft/decolamos
+
