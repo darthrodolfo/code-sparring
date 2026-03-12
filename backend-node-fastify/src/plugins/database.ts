@@ -9,7 +9,8 @@ declare module "fastify" {
 }
 
 export default fp(async (fastify) => {
-  const db = new Database(join(process.cwd(), "aircraft.db"));
+  const dbPath = process.env.AIRCRAFT_DB_PATH ?? join(process.cwd(), "aircraft.db");
+  const db = new Database(dbPath);
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS aircraft (
