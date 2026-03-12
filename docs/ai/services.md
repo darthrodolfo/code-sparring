@@ -7,12 +7,12 @@
 | `backend-csharp/` | .NET 9 Minimal API | 5202 | Round 1 Complete |
 | `backend-python/` | FastAPI + Pydantic v2 | 8000 | Round 1 Complete |
 | `backend-go/` | Go stdlib (net/http) | 8080 | Round 1 Complete |
-| `backend-node-next-js/` | NestJS + Express + TypeScript | 3000 | Round 1 Complete |
-| `backend-dart/` | Dart Frog | 8080 | Phase 1 Complete |
+| `backend-node-next-js/` | NestJS + Express + TypeScript | 3000 | Round 1 Complete (safari only) |
+| `backend-node-fastify/` | Fastify + TypeScript | 3001 | Round 1 Complete — **Tier 1 for AI integrations** |
+| `backend-dart/` | Dart Frog | 8080 | Round 1 Complete |
 
 ### Planned (not yet scaffolded)
 
-- Node.js puro + Fastify
 - Java / Spring Boot
 
 ---
@@ -39,11 +39,18 @@ cd backend-go && go run .
 cd backend-go && go build
 ```
 
-### Node.js / NestJS
+### Node.js / NestJS (safari only)
 
 ```bash
 cd backend-node-next-js && npm run start:dev
 cd backend-node-next-js && npm run build
+```
+
+### Node.js / Fastify (Tier 1)
+
+```bash
+cd backend-node-fastify && npm run dev
+cd backend-node-fastify && npm run build:ts
 ```
 
 ### Dart
@@ -79,7 +86,7 @@ cd backend-dart && dart_frog build
 - Nullable: pointers (`*string`, `*int`)
 - Serialization: Decimal as string, time.Time as RFC3339, time.Duration as nanoseconds
 
-### Node.js / NestJS
+### Node.js / NestJS (safari only — no further expansion)
 
 - NestJS + Express, TypeScript strict mode
 - experimentalDecorators + emitDecoratorMetadata enabled
@@ -89,6 +96,17 @@ cd backend-dart && dart_frog build
 - Architecture: DatabaseModule (@Global) + AircraftModule (Controller/Service/Repository)
 - OnModuleInit lifecycle hook for schema initialization
 - Entity: interface (not class) with optional fields via `?`
+
+### Node.js / Fastify (Tier 1 — AI integrations)
+
+- Fastify + TypeScript, plugin-based architecture
+- AutoLoad plugin system (`src/plugins/` + `src/routes/aircraft/`)
+- DB plugin: `src/plugins/database.ts` with `fp()` — exposes `fastify.db` globally
+- SQLite: better-sqlite3 (sync), single flat table with JSON columns for nested types
+- Manual `rowToAircraft()` mapper — snake_case DB → camelCase domain
+- Types: `aircraft.types.ts` — enums, interfaces, no classes/decorators
+- Module resolution: `NodeNext` — all local imports require `.js` extension
+- Port: 3001
 
 ### Dart
 

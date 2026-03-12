@@ -15,14 +15,12 @@ The backend safari is a controlled sequence of implementations of the **same dom
 7. **Dart backend (Dart Frog)**
 8. Return to **C# / .NET** for the premium final backend
 
-### Node.js Clarification
+### Node.js Stack Decision
 
-If a future chat mentions **Node.js / Next.js** in backend context, clarify whether the real target is **NestJS**. The intended backend stack is **NestJS**, not Next.js, unless the user explicitly changes direction.
+The Node.js/TypeScript Tier 1 stack for AI integrations is **Fastify** (pure, no NestJS wrapper). NestJS completed its safari stop-point and remains as a reference implementation only.
 
-For Node exploration, preserve learning contrast:
-- `NestJS + Express` — framework-heavy, opinionated path
-- `Node puro + Fastify` — lower-level, lighter-weight path
-- Do not suggest both as separate safari stacks unless the user explicitly wants an HTTP-adapter comparison
+- **Fastify (pure)** — Tier 1, plugin-based, schema-driven, used for AI integrations
+- **NestJS + Express** — safari complete, stop-point reached, no further expansion
 
 ---
 
@@ -46,16 +44,16 @@ Before suggesting any stack variation, ask: **"Does this teach a meaningfully di
 | C# / .NET 9 | Minimal API | SQLite |
 | Python | FastAPI / Pydantic v2 | SQLite (aiosqlite) |
 | Go | stdlib (net/http) | SQLite (go-sqlite3) |
-| Node.js | NestJS + Express | SQLite (better-sqlite3) |
-| Node.js | Fastify (puro) | SQLite (planned) |
+| Node.js | NestJS + Express | SQLite (better-sqlite3) | Safari only |
+| Node.js | Fastify (puro) | SQLite (better-sqlite3) | **Tier 1 — AI integrations** |
 | Java | Spring Boot | SQLite (planned) |
-| Dart | Dart Frog | SQLite (planned) |
+| Dart | Dart Frog | SQLite (sqlite3) |
 
 ### Common Persistence Baseline
 
 **SQLite** is the common persistence layer across all safari stacks. Future conceptual exploration may include PostgreSQL, MariaDB, Redis, MongoDB, DynamoDB, CockroachDB, Supabase, ClickHouse, and pgvector — but these are **not** part of the mandatory safari stop-point.
 
-### Final Premium Topics (C# / .NET only)
+### Final Premium Topics (C# / .NET + Node.js / Fastify)
 
 - AI integrations (embeddings, semantic search, RAG, agents)
 - Authentication / authorization

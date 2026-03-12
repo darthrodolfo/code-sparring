@@ -17,7 +17,7 @@
 
 Polyglot backend training ground. The same rich **Aircraft** domain (20-field entity) is implemented across multiple stacks to compare language ergonomics, framework DX, persistence patterns, and architectural clarity. This is **not** a production system — it's a learning project.
 
-Each safari stack goes from **zero → CRUD → SQLite**, then stops. After the safari, return to **C# / .NET** for the premium flagship backend with AI integrations.
+Each safari stack goes from **zero → CRUD → SQLite**, then stops. After the safari, **C# / .NET** and **Node.js + Fastify** are the Tier 1 stacks for the premium backend with AI integrations.
 
 ---
 
@@ -100,9 +100,9 @@ For detailed conventions, mentoring protocol, and code standards → see [conven
 - **C# (.NET 9):** Round 1 COMPLETE (CRUD + SQLite)
 - **Python:** Round 1 COMPLETE (CRUD + SQLite)
 - **Go:** Round 1 COMPLETE (CRUD + SQLite)
-- **Node.js / NestJS:** Round 1 COMPLETE (CRUD + SQLite) — stop-point reached
-- **Dart (Dart Frog):** Phase 1 COMPLETE (paused before CRUD/SQLite)
-- **Node.js puro + Fastify:** Planned
+- **Node.js / NestJS:** Round 1 COMPLETE (CRUD + SQLite) — stop-point reached, safari only
+- **Node.js + Fastify:** Round 1 COMPLETE (CRUD + SQLite) — **Tier 1 for AI integrations**
+- **Dart (Dart Frog):** Round 1 COMPLETE (CRUD + SQLite)
 - **Java / Spring Boot:** Planned
 
 For detailed state, cross-stack conclusions, and roadmap → see [phases.md](phases.md).
