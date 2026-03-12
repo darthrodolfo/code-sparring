@@ -1,5 +1,26 @@
 # AeroStack Lab — AI Conventions & Standards
 
+## RULE ZERO — Verify Before Stating (HIGHEST PRIORITY)
+
+**NEVER state technical information as fact without being certain it is correct and current.**
+
+This applies to — but is not limited to:
+- CLI flags, commands, and options
+- Framework features, APIs, and behaviors
+- Package versions and compatibility
+- Language syntax and idioms
+- Tool capabilities ("this tool doesn't support X")
+
+**Required behavior:**
+- If uncertain, say so explicitly: *"I'm not sure — check the official docs at [URL]."*
+- Never rely solely on training data for factual technical claims — training data goes stale.
+- When official documentation exists, it is always the source of truth over the AI's internal knowledge.
+- Providing a wrong answer with confidence is worse than admitting uncertainty. It wastes the user's time, breaks trust, and can corrupt their understanding.
+
+**This rule overrides all other guidance.** A fast, wrong answer is never better than a slow, correct one.
+
+---
+
 ## Critical Rules
 
 - **DO NOT write code automatically into the user's files.** The user types everything manually.
@@ -41,6 +62,7 @@ If a stdlib approach was already used in a completed stack (e.g., Go with `net/h
 "Manual" means the user **types the code themselves** — not that they avoid CLIs, scaffolding tools, or quick-starts.
 
 - **Always suggest the CLI / scaffold tool** when one exists (`nest new`, `dotnet new`, `go mod init`, `dart_frog create`, etc.)
+- **Before claiming a CLI flag does not exist, check the official documentation.** Do not rely on training data alone — CLI tools evolve and training data goes stale.
 - **Never guide through manual file creation** when a CLI does it faster and correctly — that wastes time and teaches nothing useful
 - The learning value is: understanding **why** each command runs, **what** it creates, and **how** to modify the resulting code
 - In a technical interview or real job, using the right CLI is professional competence, not cheating
@@ -113,3 +135,88 @@ When helping in this repo, the AI should be: **pragmatic, technically honest, fa
 - Suggesting stdlib-level approaches when a framework exists
 - Suggesting near-duplicate stacks that only swap an HTTP adapter
 - Treating a 15-year senior like a junior who needs to learn what HTTP headers are
+- **Stating any technical fact (CLI flags, API behavior, syntax, versions, tool capabilities) without certainty** — see Rule Zero above
+- **Withholding CLI shortcuts, scaffold commands, or faster paths** — if a shorter way exists, surface it immediately
+
+---
+
+## Agent Exclusion List (AI .gitignore)
+
+**NEVER read, write, modify, or analyze files in the directories and patterns listed below.** These are generated artifacts, build outputs, dependency caches, and temporary files. Reading them wastes tokens, slows down responses, and risks modifying auto-generated code that will be overwritten.
+
+### Universal Exclusions
+
+| Pattern | Reason |
+|---------|--------|
+| `.git/` | Git internals |
+| `*.db`, `*.sqlite`, `*.sqlite3` | Database files (binary) |
+| `.env`, `.env.*` | Secrets / environment variables |
+| `.DS_Store`, `Thumbs.db` | OS metadata |
+| `*.log` | Log files |
+| `coverage/` | Test coverage reports |
+
+### C# / .NET
+
+| Pattern | Reason |
+|---------|--------|
+| `bin/` | Compiled output |
+| `obj/` | Intermediate build artifacts |
+| `.vs/` | Visual Studio IDE metadata |
+| `*.user`, `*.suo` | User-specific IDE settings |
+| `*.dll`, `*.exe`, `*.pdb` | Compiled binaries and debug symbols |
+| `packages/` | NuGet package cache (legacy) |
+
+### Python
+
+| Pattern | Reason |
+|---------|--------|
+| `__pycache__/` | Bytecode cache |
+| `*.pyc`, `*.pyo` | Compiled Python files |
+| `.venv/`, `venv/`, `env/`, `.env/` | Virtual environments |
+| `.mypy_cache/` | Type checker cache |
+| `.pytest_cache/` | Test runner cache |
+| `.ruff_cache/` | Linter cache |
+| `*.egg-info/`, `dist/` | Distribution artifacts |
+
+### Go
+
+| Pattern | Reason |
+|---------|--------|
+| `vendor/` | Vendored dependencies (if present) |
+| `*.exe`, `*.test` | Compiled binaries |
+
+### Node.js / TypeScript (NestJS, Fastify, etc.)
+
+| Pattern | Reason |
+|---------|--------|
+| `node_modules/` | Dependency tree (can be massive) |
+| `dist/` | Compiled/transpiled output |
+| `.nest/` | NestJS cache |
+| `.next/` | Next.js build output |
+| `*.tsbuildinfo` | TypeScript incremental build info |
+| `.npm/`, `.yarn/`, `.pnp.*` | Package manager caches |
+
+### Dart
+
+| Pattern | Reason |
+|---------|--------|
+| `.dart_tool/` | Dart toolchain cache |
+| `build/` | Dart Frog / Dart build output |
+| `.packages` | Legacy package resolution |
+| `.pub-cache/` | Pub package cache |
+
+### Java / Spring Boot
+
+| Pattern | Reason |
+|---------|--------|
+| `target/` | Maven build output |
+| `build/` | Gradle build output |
+| `.gradle/` | Gradle cache |
+| `.idea/` | IntelliJ IDE metadata |
+| `*.class`, `*.jar`, `*.war` | Compiled Java artifacts |
+| `.mvn/wrapper/` | Maven wrapper (binary) |
+| `gradle/wrapper/` | Gradle wrapper (binary) |
+
+### Rule of Thumb
+
+If in doubt, ask: **"Did a human write this file, or did a tool generate it?"** If the answer is the latter, do not read or modify it. Focus on source code, configuration files authored by the user, and documentation.

@@ -1,4 +1,4 @@
-# AGENT.md — AeroStack Lab (Code-Sparring)
+# agent.md — AeroStack Lab (Code-Sparring)
 
 > Bootstrap entry point for AI agents. Start here, then load modules as needed.
 
@@ -16,11 +16,13 @@ This is a **learning and experimentation project**, not a production system.
 | [architecture.md](architecture.md) | Stack plan, tech choices, anti-patterns, domain model overview |
 | [services.md](services.md) | Service registry (directories, ports, commands, key files) |
 | [phases.md](phases.md) | Roadmap, current state per stack, cross-stack conclusions |
-| [conventions.md](conventions.md) | AI interaction rules, coding standards, mentoring protocol |
+| [conventions.md](conventions.md) | AI interaction rules, coding standards, mentoring protocol, **agent exclusion list** |
 
 ## Entry Point for Claude Code
 
-See [CLAUDE.md](CLAUDE.md) for Claude Code-specific behavioral rules.
+See [claude.md](claude.md) for Claude Code-specific behavioral rules.
+
+**Important:** Before exploring the codebase, review the **Agent Exclusion List** in [conventions.md](conventions.md) — it lists all generated/build directories that agents must never read or write to (e.g., `bin/`, `obj/`, `node_modules/`, `build/`, `dist/`, `__pycache__/`, `.dart_tool/`, `target/`).
 
 ## Study Documentation (reference only)
 

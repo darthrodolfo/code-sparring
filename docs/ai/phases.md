@@ -37,15 +37,15 @@ Topics that wait for the final .NET premium backend:
 | C# (.NET 9) | Phase 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
 | Python (FastAPI) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
 | Go (stdlib) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
-| Node.js / NestJS | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite — stop-point reached |
-| Dart (Dart Frog) | **In Progress** | Phase 0 |
-| Node.js puro + Fastify | Planned | — |
-| Java / Spring Boot | Planned | — |
+| Node.js / NestJS | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
+| Dart (Dart Frog) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
+| Node.js puro + Fastify | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
+| Java / Spring Boot | Delayed/Postponed | — |
 
 ### Next Actions
 
-1. **Dart (Dart Frog):** Phase 0 → CRUD → SQLite → stop
-2. Remaining safari stacks: Node.js puro + Fastify, Java / Spring Boot
+1. Next safari stack selection: Node.js puro + Fastify or Java / Spring Boot
+2. Dart (Dart Frog): pause at Phase 1, return later for Phase 2 (CRUD) → Phase 3 (SQLite) → stop
 3. After safari: return to C# / .NET for premium backend + AI integrations
 
 ---

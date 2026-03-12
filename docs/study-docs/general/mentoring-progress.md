@@ -42,7 +42,7 @@
   - Tag normalization + full validation
 - Verified: uuid.UUID, decimal.Decimal, time.Time (RFC3339), time.Duration (nanoseconds), `[]byte` (Base64)
 
-### Node.js / NestJS — Round 1 COMPLETE (stop-point reached)
+### Node.js / NestJS — Round 1 COMPLETE
 
 - `nest new .` scaffold + TypeScript + ESLint + Prettier
 - Enums: AircraftStatus, AircraftCategory (TypeScript native enum with string values)
@@ -59,10 +59,12 @@
 - OnModuleInit lifecycle hook for schema initialization
 - Exception-based error handling (NotFoundException -> 404 automatic)
 
-### Dart (Dart Frog) — In Progress
+### Dart (Dart Frog) — Round 1 COMPLETE
 
 - Framework: Dart Frog (Very Good Ventures) — file-based routing, CLI scaffolding
-- Target: Phase 0 -> CRUD -> SQLite -> stop
+- Boot completed (project scaffold, local run, first routes)
+- Phase 1 fundamentals completed (rich model/DTO flow, JSON handling, basic validation and request/response mapping)
+- Current checkpoint: paused before Phase 2 (full CRUD) and Phase 3 (SQLite)
 - Port: 8080
 
 ---

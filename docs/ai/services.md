@@ -8,7 +8,7 @@
 | `backend-python/` | FastAPI + Pydantic v2 | 8000 | Round 1 Complete |
 | `backend-go/` | Go stdlib (net/http) | 8080 | Round 1 Complete |
 | `backend-node-next-js/` | NestJS + Express + TypeScript | 3000 | Round 1 Complete |
-| `backend-dart/` | Dart Frog | 8080 | In Progress |
+| `backend-dart/` | Dart Frog | 8080 | Phase 1 Complete |
 
 ### Planned (not yet scaffolded)
 
