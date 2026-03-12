@@ -1,15 +1,23 @@
 @baseUrl = http://localhost:3000
+@aircraftCreatedId = {{createAircraft.response.body.id}}
 
 ### Health / Decolamos
 GET {{baseUrl}}/decolamos
 
+###
+
 ### List Aircraft
 GET {{baseUrl}}/aircraft
 
+###
+
 ### Get Aircraft by ID
-GET {{baseUrl}}/aircraft/REPLACE_WITH_ID
+GET {{baseUrl}}/aircraft/{{aircraftCreatedId}}
+
+###
 
 ### Create Aircraft (full payload)
+# @name createAircraft
 POST {{baseUrl}}/aircraft
 Content-Type: application/json
 
@@ -19,7 +27,7 @@ Content-Type: application/json
   "year": 2005,
   "status": "Active",
   "category": "Fighter",
-  "maxSpeedKph": 1960,
+  "maxSpeedKpm": 1960,
   "ceilingMeters": 19812,
   "rangeKm": 2960,
   "engineCount": 2,
@@ -37,7 +45,10 @@ Content-Type: application/json
   ]
 }
 
+###
+
 ### Create Aircraft (minimal required fields only)
+# @name createMinimalAircraft
 POST {{baseUrl}}/aircraft
 Content-Type: application/json
 
@@ -54,8 +65,10 @@ Content-Type: application/json
   "conflictHistory": []
 }
 
+###
+
 ### Update Aircraft
-PUT {{baseUrl}}/aircraft/REPLACE_WITH_ID
+PUT {{baseUrl}}/aircraft/{{aircraftCreatedId}}
 Content-Type: application/json
 
 {
@@ -63,5 +76,7 @@ Content-Type: application/json
   "tags": ["stealth", "supercruise", "5th-gen", "upgraded"]
 }
 
+###
+
 ### Delete Aircraft
-DELETE {{baseUrl}}/aircraft/REPLACE_WITH_ID
+DELETE {{baseUrl}}/aircraft/{{aircraftCreatedId}}

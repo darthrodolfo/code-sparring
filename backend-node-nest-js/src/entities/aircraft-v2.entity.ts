@@ -15,7 +15,7 @@ export interface AircraftV2 {
   year: number;
   status: AircraftStatus;
   category: AircraftCategory;
-  maxSpeedKph?: number;
+  maxSpeedKpm?: number;
   ceilingMeters?: number;
   rangeKm?: number;
   engineCount: number;

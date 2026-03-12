@@ -71,7 +71,7 @@ export class AircraftRepository {
           country_of_origin, description, first_flight_date, is_stealth_capable
         ) VALUES (
           @id, @model, @manufacturer, @year, @status, @category,
-          @maxSpeedKph, @ceilingMeters, @rangeKm, @engineCount, @engineModel,
+          @maxSpeedKpm, @ceilingMeters, @rangeKm, @engineCount, @engineModel,
           @wingspanMeters, @emptyWeightKg, @maxTakeoffWeightKg,
           @countryOfOrigin, @description, @firstFlightDate, @isStealthCapable
         )
@@ -112,7 +112,7 @@ export class AircraftRepository {
           `
         UPDATE aircraft_v2 SET
           model = @model, manufacturer = @manufacturer, year = @year,
-          status = @status, category = @category, max_speed_kph = @maxSpeedKph,
+          status = @status, category = @category, max_speed_kph = @maxSpeedKpm,
           ceiling_meters = @ceilingMeters, range_km = @rangeKm,
           engine_count = @engineCount, engine_model = @engineModel,
           wingspan_meters = @wingspanMeters, empty_weight_kg = @emptyWeightKg,
@@ -175,7 +175,7 @@ export class AircraftRepository {
       year: row.year,
       status: row.status,
       category: row.category,
-      maxSpeedKph: row.max_speed_kph ?? undefined,
+      maxSpeedKpm: row.max_speed_kph ?? undefined,
       ceilingMeters: row.ceiling_meters ?? undefined,
       rangeKm: row.range_km ?? undefined,
       engineCount: row.engine_count,

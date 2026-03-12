@@ -588,7 +588,7 @@ o senior que a vaga procura.
 
 # GEMINI CRUD ROADMAP AI INTEGARTIONS HELP
 
-# 🚀 Plano de Estudos: AI Integrations (Clone .NET & NestJS)
+# 🚀 Plano de Estudos: AI Integrations (Clone .NET & Fastify)
 **Domínio:** Sistema de Gestão de Aviões Militares (CRUD + IA)
 **Objetivo:** Dominar integrações de Inteligência Artificial do zero ao avançado em arquitetura monolítica (antes de quebrar em microserviços), focando em resiliência, baixo custo e design patterns.
 
@@ -596,7 +596,7 @@ o senior que a vaga procura.
 Para rodar 100% local e sem custos de API, ambos os backends consumirão a mesma infraestrutura via Docker.
 
 * **Backend 1:** .NET (C#) com Entity Framework e Semantic Kernel.
-* **Backend 2:** Node.js (TypeScript) com NestJS, Fastify, Prisma/TypeORM e LangChain.js.
+* **Backend 2:** Node.js (TypeScript) com Fastify, Drizzle/better-sqlite3 e LangChain.js.
 * **Inteligência Local:** Ollama (rodando modelos como `llama3` para RAG e `nomic-embed-text` para vetores).
 * **Bancos de Dados:**
   * **Relacional:** PostgreSQL (para dados estruturados como modelo, ano, fabricante).
@@ -606,7 +606,7 @@ Para rodar 100% local e sem custos de API, ambos os backends consumirão a mesma
 
 ## 🗺️ 2. Roadmap de Implementação e Endpoints (Do Zero ao Máximo)
 
-Abaixo está a progressão sugerida. Faça o "Hello World" de cada etapa no .NET e depois replique no NestJS para comparar a Developer Experience.
+Abaixo está a progressão sugerida. Faça o "Hello World" de cada etapa no .NET e depois replique no Fastify para comparar a Developer Experience.
 
 ### Estágio 1: O Básico (Ingestão e Vetorização)
 O foco aqui é aprender a transformar texto em vetores (embeddings) e lidar com gravação dupla (Dual Write).
@@ -633,7 +633,7 @@ Sistemas de IA falham, sofrem timeout e gargalos. Aqui você prova senioridade.
 
 * **Modificando o `POST /api/aircraft` e `GET /api/aircraft/search`**
   * **Ação (.NET):** Implementar o **Polly** (Circuit Breaker + Timeout + Retry).
-  * **Ação (NestJS):** Implementar o **Opossum** ou interceptors customizados.
+  * **Ação (Fastify):** Implementar o **Opossum** como plugin ou hooks customizados.
   * **O Teste:** Pare o container do Ollama de propósito (`docker stop ollama`).
   * **O Fallback:** O Circuit Breaker deve abrir. O sistema intercepta a falha e faz uma busca convencional no banco de dados (`WHERE description LIKE '%stealth%'`) ou enfileira a criação do vetor para depois.
 
@@ -691,7 +691,7 @@ var pipeline = new ResiliencePipelineBuilder()
 await pipeline.ExecuteAsync(async token => await _ollamaClient.GenerateEmbedding(text));
 ```
 
-### TypeScript (NestJS) - Circuit Breaker com Opossum
+### TypeScript (Fastify) - Circuit Breaker com Opossum
 
 ```typescript
 import CircuitBreaker from 'opossum';

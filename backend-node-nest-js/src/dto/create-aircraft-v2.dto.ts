@@ -54,7 +54,7 @@ export class CreateAircraftV2Request {
 
   @IsOptional()
   @IsNumber()
-  maxSpeedKph?: number;
+  maxSpeedKpm?: number;
 
   @IsOptional()
   @IsNumber()
