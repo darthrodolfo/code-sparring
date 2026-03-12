@@ -27,9 +27,9 @@ export interface AircraftSpecs {
 }
 
 export interface ConflictHistory {
-  conflictName: string;
-  startDate: string; // ISO 8601 date string
-  endDate: string; // ISO 8601 date string
+  name: string;
+  startYear: number; // ISO 8601 date string
+  endYear: number; // ISO 8601 date string
   roleInConflict: AircraftRole;
 }
 
@@ -37,7 +37,7 @@ export interface AircraftV2 {
   id: string;
   model: string;
   manufacturer: string;
-  serialNumber: string;
+  serialNumber: string | null;
   yearOfManufacture: string;
   priceMillionUSD: string; // decimal serializado como string
   emptyWeightKg: number;
@@ -46,6 +46,8 @@ export interface AircraftV2 {
   lastMaintenanceTime: string; // ISO 8601 datetime: "2024-01-01T00:00:00Z"
   baseLocation: Geolocation;
   specs: AircraftSpecs;
+  role: AircraftRole;
+  tags: string[];
   conflictHistory: ConflictHistory[];
   metadata: Record<string, string>;
   estimatedUnitsProduced: number | null;

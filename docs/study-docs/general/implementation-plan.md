@@ -65,11 +65,12 @@ Tests nested complex types, nullable value types, and duration.
 
 Tests lists of complex objects (1:N simulation). `Duration` as `string` was intentionally avoided (anti stringly-typed design).
 
-| Field | Type |
-|-------|------|
-| Name | string |
-| StartYear | int |
-| EndYear | int |
+| Field | Type | Notes |
+|-------|------|-------|
+| Name | string | |
+| StartYear | int | |
+| EndYear | int | |
+| RoleInConflict | AircraftRole | Enum reuse inside nested type — enables role-based filtering |
 
 ---
 
