@@ -38,8 +38,8 @@ Topics that wait for the final .NET premium backend:
 | Python (FastAPI) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
 | Go (stdlib) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
 | Node.js / NestJS | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
-| Dart (Dart Frog) | **Phase 1 COMPLETE** |
-| Node.js puro + Fastify | Current | — |
+| Dart (Dart Frog) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
+| Node.js puro + Fastify | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
 | Java / Spring Boot | Delayed/Postponed | — |
 
 ### Next Actions
