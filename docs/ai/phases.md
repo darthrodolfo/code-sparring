@@ -20,7 +20,7 @@ Every non-final stack should stop after the same comparable milestone:
 
 After **CRUD + SQLite**, stop expanding that stack. Do **not** keep growing each implementation into a huge production system.
 
-Topics that wait for the final .NET premium backend:
+Topics that wait for the Tier 1 stacks (.NET + Node.js/Fastify):
 - Authentication / authorization
 - Caching
 - Background jobs / queues
@@ -44,9 +44,9 @@ Topics that wait for the final .NET premium backend:
 
 ### Next Actions
 
-1. Next safari stack selection: Node.js puro + Fastify or Java / Spring Boot
-2. Dart (Dart Frog): pause at Phase 1, return later for Phase 2 (CRUD) → Phase 3 (SQLite) → stop
-3. After safari: return to C# / .NET for premium backend + AI integrations
+1. Safari complete for all primary stacks (Java / Spring Boot postponed)
+2. Next: return to C# / .NET + Node.js / Fastify as Tier 1 for pre-AI foundations + AI integrations
+3. NestJS stays at stop-point — safari reference only, no further expansion
 
 ---
 
@@ -95,11 +95,11 @@ These conclusions should inform future comparisons, not bias them blindly.
 
 ---
 
-## Final Premium Return to C# / .NET
+## Tier 1 Premium Stacks — C# / .NET + Node.js / Fastify
 
-After the safari, return to **C# / .NET** and build the flagship backend.
+After the safari, **C# / .NET** and **Node.js / Fastify** advance together as Tier 1 stacks.
 
-Expected premium topics:
+Expected premium topics (both stacks):
 - Richer architecture
 - Validation
 - Authentication / authorization
@@ -108,7 +108,9 @@ Expected premium topics:
 - Observability
 - Cleaner project structure
 - Testing
-- AI integrations
+- AI integrations (embeddings, RAG, agents, MCP, streaming)
 - Premium / gold-standard backend quality
 
-This final project becomes the strongest showcase repo.
+Both stacks deliver the same capabilities with different architectural approaches:
+- **.NET** — opiniated, convention-based, enterprise patterns (Polly, Serilog, EF Core)
+- **Fastify** — plugin-based, schema-driven, composition over inheritance (Pino, Ajv, native hooks)

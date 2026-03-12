@@ -1,4 +1,4 @@
-# AI Integrations para Backend Engineers — Roadmap Unificado (.NET + NestJS)
+# AI Integrations para Backend Engineers — Roadmap Unificado (.NET + Fastify)
 
 ## Sumário
 
@@ -12,7 +12,7 @@
 8. [AI integrations que precisam entrar no laboratório](#ai-integrations-que-precisam-entrar-no-laboratório)
 9. [Boas práticas de arquitetura e operação](#boas-práticas-de-arquitetura-e-operação)
 10. [C#/.NET: abordagem recomendada](#cnet-abordagem-recomendada)
-11. [TypeScript/NestJS: abordagem recomendada](#typescriptnestjs-abordagem-recomendada)
+11. [TypeScript/Fastify: abordagem recomendada](#typescriptfastify-abordagem-recomendada)
 12. [Quando entrar com Kafka, mensageria e microserviços](#quando-entrar-com-kafka-mensageria-e-microserviços)
 13. [Cloud: como treinar Azure, AWS e GCP sem se perder](#cloud-como-treinar-azure-aws-e-gcp-sem-se-perder)
 14. [Timeline e fundamentos conceituais de AI Integration](#timeline-e-fundamentos-conceituais-de-ai-integration)
@@ -26,7 +26,7 @@
 Este documento unifica:
 
 - o aulão teórico sobre AI Integrations;
-- o roadmap prático para os clones em **.NET** e **NestJS**;
+- o roadmap prático para os clones em **.NET** e **Fastify (Node.js/TypeScript)**;
 - as decisões que surgiram nas conversas sobre **monólito lean**, **versão enterprise**, **cloud**, **mensageria**, **RAG**, **agents**, **MCP**, **document pipelines** e **showcase de portfólio**;
 - um resumo claro de **features**, **endpoints**, **bancos**, **plugs**, **integrações**, **boas práticas**, e a **ordem correta de estudo e implementação**.
 
@@ -128,7 +128,7 @@ A narrativa correta é:
 Rodar tudo localmente com Docker:
 
 - API .NET
-- API NestJS
+- API Fastify
 - PostgreSQL
 - Redis
 - armazenamento de arquivos local/MinIO
@@ -219,12 +219,12 @@ Adicionar:
 ### Backend 2 — TypeScript
 - Node.js
 - TypeScript
-- NestJS
-- Fastify
-- Prisma ou TypeORM
+- Fastify (pure — plugin-based architecture)
+- Drizzle ou better-sqlite3
 - LangChain.js opcional
-- Opossum ou interceptors customizados para resiliência
+- Opossum para resiliência (circuit breaker)
 - BullMQ ou workers dedicados quando necessário
+- JSON Schema + Ajv para validação nativa
 
 ### Backend 3 — opcional no estágio enterprise
 - Go
@@ -1042,41 +1042,40 @@ A ordem madura é:
 
 ---
 
-## TypeScript/NestJS: abordagem recomendada
+## TypeScript/Fastify: abordagem recomendada
 
 ## Estrutura sugerida
 
-- `modules/aircraft`
-- `modules/documents`
-- `modules/search`
-- `modules/chat`
-- `modules/agents`
-- `modules/health`
-- `integrations/ai`
-- `integrations/storage`
-- `common`
+- `plugins/` (database, auth, redis, swagger, ai-provider)
+- `routes/aircraft/`
+- `routes/documents/`
+- `routes/search/`
+- `routes/chat/`
+- `routes/agents/`
+- `routes/health/`
+- `hooks/` (correlationId, requestLogging, idempotency)
+- `services/` (ai, storage, embedding)
 
 ## Bibliotecas e peças úteis
 
-- NestJS
-- Fastify
-- Prisma ou TypeORM
+- Fastify (core + AutoLoad)
+- Drizzle ou better-sqlite3
 - `pg` / PostgreSQL
 - LangChain.js opcional
-- Zod para validação extra
-- Pino
+- JSON Schema + Ajv (validação nativa do Fastify)
+- Pino (built-in no Fastify)
 - Opossum
 - BullMQ
 - KafkaJS quando entrar em eventos
 - OpenTelemetry
 
-## Coisas boas para treinar em NestJS
+## Coisas boas para explorar no Fastify
 
-- providers e modules bem separados
-- interceptors
-- pipes
-- exception filters
-- SSE/streaming
+- plugin system com encapsulação (`fp()` vs scoped)
+- hooks (onRequest, preHandler, onSend, onError)
+- JSON Schema validation + serialization
+- `fastify.decorate()` para DI via instância
+- SSE/streaming via `reply.raw`
 - workers
 - filas
 - adapters Fastify
@@ -1111,7 +1110,7 @@ A partir disso:
 ### Integração entre stacks
 - .NET publica evento
 - Go consome para processamento pesado
-- NestJS atualiza status
+- Fastify atualiza status
 - outro serviço envia notificação
 
 ### Reprocessamento

@@ -10,7 +10,7 @@ O plano abaixo organiza **tudo que precisa acontecer antes de AI** e depois **to
 
 ## PARTE 1 — FUNDAÇÕES PRÉ-AI
 
-A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de tocar em qualquer LLM. Cada etapa se aplica primeiro ao .NET, depois replica no NestJS, e eventualmente nos backends satélites (Go, Python, Dart).
+A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de tocar em qualquer LLM. Cada etapa se aplica primeiro ao .NET, depois replica no Fastify (Node.js + TypeScript), e eventualmente nos backends satélites (Go, Python, Dart).
 
 ---
 
@@ -37,13 +37,13 @@ A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de
 
 6. Configurar no .NET: `JsonSerializerOptions` com `PropertyNamingPolicy = CamelCase`, `JsonStringEnumConverter`, `DefaultIgnoreCondition`.
 
-7. Configurar no NestJS: interceptor global que wrapa toda response no envelope, `class-transformer` com `@Expose()`.
+7. Configurar no Fastify: hook `onSend` global que wrapa toda response no envelope, serialização via JSON Schema.
 
 **Endpoints afetados:** Todos. Isso é transversal.
 
 **Entregável por linguagem:**
 - .NET: middleware/filter + `JsonSerializerOptions` global
-- NestJS: interceptor global + DTO base
+- Fastify: hook `onSend` global + response schema
 - Python (FastAPI): modelo Pydantic base + middleware
 - Go (Gin/Echo): struct de envelope + middleware
 - Dart (shelf/dart_frog): modelo base + middleware
@@ -89,7 +89,7 @@ A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de
 
 **Entregável por linguagem:**
 - .NET: `FluentValidation` ou `MinimalApis.Extensions` com endpoint filters
-- NestJS: `class-validator` + `ValidationPipe` global
+- Fastify: JSON Schema + Ajv (validação nativa compilada)
 - Python: Pydantic validators
 - Go: validação manual ou `go-playground/validator`
 - Dart: validação manual no handler
@@ -123,7 +123,7 @@ A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de
 
 **Entregável por linguagem:**
 - .NET: endpoint filter ou middleware + SQLite/Redis
-- NestJS: guard ou interceptor + Redis/SQLite
+- Fastify: plugin + hook `preHandler` + Redis/SQLite
 - Python/Go/Dart: middleware equivalente
 
 ---
@@ -146,7 +146,7 @@ A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de
 
 **Entregável por linguagem:**
 - .NET: `AddAuthentication().AddJwtBearer()` + middleware de rate limit
-- NestJS: `@nestjs/jwt` + guard + `@nestjs/throttler`
+- Fastify: `@fastify/jwt` + `@fastify/rate-limit` + preHandler hook
 - Python: `python-jose` + middleware
 - Go: middleware JWT manual ou `golang-jwt`
 - Dart: middleware JWT manual
@@ -163,7 +163,7 @@ A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de
    - Todo request logado com: method, path, statusCode, durationMs, traceId, userId
    - Todo erro logado com: stack trace, request body (sanitizado), traceId
    - .NET: Serilog com sink Console (JSON)
-   - NestJS: Pino com `pino-pretty` em dev, JSON em prod
+   - Fastify: Pino built-in, `pino-pretty` em dev, JSON em prod
 
 2. **TraceId / CorrelationId:**
    - Gerar UUID por request (ou aceitar do header `X-Correlation-Id`)
@@ -197,12 +197,12 @@ A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de
 
 6. **OpenAPI / Swagger:**
    - .NET: Swashbuckle ou Scalar
-   - NestJS: `@nestjs/swagger`
+   - Fastify: `@fastify/swagger` + `@fastify/swagger-ui`
    - Documentar todos os endpoints com schemas, exemplos, e códigos de erro
 
 **Entregável por linguagem:**
 - .NET: Serilog + health checks nativos + Swagger
-- NestJS: Pino + Terminus health checks + Swagger
+- Fastify: Pino (built-in) + `@fastify/under-pressure` health checks + `@fastify/swagger`
 - Python: logging estruturado + health endpoint
 - Go: middleware de logging + health endpoint
 - Dart: middleware de logging + health endpoint
@@ -229,7 +229,7 @@ A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de
 
 **Entregável:**
 - .NET: `StackExchange.Redis` + `IDistributedCache`
-- NestJS: `@nestjs/cache-manager` + `cache-manager-ioredis`
+- Fastify: `@fastify/redis` + `@fastify/caching`
 
 ---
 
@@ -271,14 +271,14 @@ A ideia aqui é nivelar o backend a um padrão "senior interview-ready" antes de
 
 **Entregável por linguagem:**
 - .NET: xUnit + `WebApplicationFactory` + FluentAssertions
-- NestJS: Jest + Supertest + test module
+- Fastify: Vitest + `fastify.inject()` (light-my-request)
 - Python: pytest + httpx/TestClient
 - Go: `testing` + `httptest`
 - Dart: `test` + `shelf_test_handler` ou equivalente
 
 ---
 
-### ETAPA 7 — Refatoração Estrutural (somente .NET e NestJS)
+### ETAPA 7 — Refatoração Estrutural (somente .NET e Fastify)
 
 **Objetivo:** Sair do arquivo único e organizar pra escalar. Não é DDD completo, é organização pragmática.
 
@@ -313,27 +313,29 @@ AeroStack.Api/
 └── Configuration/
 ```
 
-**O que fazer no NestJS:**
+**O que fazer no Fastify:**
 
 ```
 aerostack-api/
 ├── src/
-│   ├── main.ts
-│   ├── app.module.ts
-│   ├── aircraft/
-│   │   ├── aircraft.module.ts
-│   │   ├── aircraft.controller.ts
-│   │   ├── aircraft.service.ts
-│   │   ├── aircraft.repository.ts
-│   │   ├── dto/
-│   │   └── validators/
-│   ├── auth/
-│   ├── health/
-│   ├── common/
-│   │   ├── interceptors/
-│   │   ├── guards/
-│   │   ├── filters/
-│   │   └── dto/
+│   ├── app.ts
+│   ├── server.ts
+│   ├── plugins/
+│   │   ├── database.ts
+│   │   ├── auth.ts
+│   │   ├── redis.ts
+│   │   └── swagger.ts
+│   ├── routes/
+│   │   ├── aircraft/
+│   │   │   ├── index.ts
+│   │   │   ├── aircraft.schemas.ts
+│   │   │   └── aircraft.service.ts
+│   │   ├── auth/
+│   │   └── health/
+│   ├── hooks/
+│   │   ├── correlationId.ts
+│   │   ├── idempotency.ts
+│   │   └── requestLogging.ts
 │   └── config/
 ```
 
@@ -341,7 +343,7 @@ aerostack-api/
 
 ### CHECKPOINT — "Backend Premium sem AI"
 
-Neste ponto o AeroStack tem, em pelo menos .NET e NestJS:
+Neste ponto o AeroStack tem, em pelo menos .NET e Fastify:
 
 - CRUD completo com modelo rico (18+ campos, nested objects, collections)
 - Contrato JSON padronizado (camelCase, envelope, erros estruturados)
@@ -357,14 +359,14 @@ Isso é exatamente o que o roadmap unificado chama de "Fase 0 — Fundações de
 
 **Prioridade por linguagem:**
 1. .NET (principal) — tudo acima completo
-2. NestJS+Fastify (clone) — tudo acima completo
+2. Fastify (clone Node.js/TypeScript) — tudo acima completo
 3. Go, Python, Dart — CRUD + contrato + validações + testes básicos (nivelar "nível médio")
 
 ---
 
 ## PARTE 2 — AI INTEGRATIONS
 
-A partir daqui, .NET e NestJS caminham juntos. Cada feature é implementada nos dois e deve produzir o mesmo resultado (ou o mais próximo possível).
+A partir daqui, .NET e Fastify caminham juntos. Cada feature é implementada nos dois e deve produzir o mesmo resultado (ou o mais próximo possível).
 
 ---
 
@@ -451,7 +453,7 @@ GET /api/aircraft/search?query={texto}&limit=10
 
 **Entregável:**
 - .NET: Polly resilience pipeline
-- NestJS: Opossum circuit breaker
+- Fastify: Opossum circuit breaker (ou plugin customizado)
 
 ---
 
@@ -511,7 +513,7 @@ Body: { messages: [...] }
 
 **O que fazer:**
 1. .NET: `IAsyncEnumerable<string>` no endpoint, `Content-Type: text/event-stream`
-2. NestJS: `@Sse()` decorator ou response manual com Fastify
+2. Fastify: `reply.raw` streaming com `Content-Type: text/event-stream`
 3. Suportar cancelamento (CancellationToken / abort signal)
 4. Timeout do stream total (ex: 120s)
 
@@ -567,7 +569,7 @@ upload → save to storage → extract text → split chunks (500-800 tokens) �
 
 **O que fazer:**
 1. Object storage: pasta local em dev, MinIO no Docker pra simular S3
-2. Background processing: `BackgroundService` no .NET, BullMQ no NestJS
+2. Background processing: `BackgroundService` no .NET, BullMQ no Fastify
 3. Status tracking: tabela `document_jobs` com status por etapa
 4. Usar manuais de aviões como documentos de teste (3 manuais, ~100 páginas, ~300 chunks)
 
@@ -640,7 +642,7 @@ get_weather (mock)
 ```
 
 **O que fazer:**
-1. Implementar MCP Server em .NET e NestJS
+1. Implementar MCP Server em .NET e Fastify
 2. Testar com Claude Desktop como client
 3. Documentar tools, resources e prompts disponíveis
 
@@ -675,7 +677,7 @@ PARTE 1 — Fundações (nivelar backend)
 ├── Etapa 4: Observabilidade (logs, tracing, health, métricas, OpenAPI)
 ├── Etapa 5: Redis (cache, rate limit, idempotência)
 ├── Etapa 6: Testes unitários e de integração
-└── Etapa 7: Refatoração estrutural (.NET e NestJS)
+└── Etapa 7: Refatoração estrutural (.NET e Fastify)
 
 PARTE 2 — AI Integrations
 ├── Fase 1:  Provider abstraction + Chat Completions
@@ -697,7 +699,7 @@ PARTE 2 — AI Integrations
 ## PRIORIDADE POR LINGUAGEM
 
 ```
-Tier 1 (feature-complete): .NET + NestJS/Fastify
+Tier 1 (feature-complete): .NET + Fastify (Node.js/TypeScript)
   → Todas as etapas e fases, resultado idêntico
 
 Tier 2 (nível médio): Go, Python, Dart
@@ -710,22 +712,22 @@ Tier 3 (quando fizer sentido): Go como worker
   → Embedding worker em Go consumindo fila
 ```
 
-## DIFERENÇAS PLANEJADAS ENTRE .NET E NESTJS
+## DIFERENÇAS PLANEJADAS ENTRE .NET E FASTIFY
 
 Ambos entregam o mesmo resultado, mas com stacks diferentes:
 
 ```
-Feature              .NET                          NestJS
+Feature              .NET                          Fastify (Node.js/TS)
 ─────────────────────────────────────────────────────────────
-ORM/DB               EF Core / Dapper + SQLite     Prisma / TypeORM + SQLite
-Validação            FluentValidation              class-validator
+ORM/DB               EF Core / Dapper + SQLite     Drizzle / better-sqlite3
+Validação            FluentValidation              JSON Schema + Ajv (nativo)
 Resiliência          Polly                         Opossum
-Logging              Serilog                       Pino
+Logging              Serilog                       Pino (built-in)
 Background jobs      BackgroundService             BullMQ
-Cache                StackExchange.Redis           cache-manager-ioredis
+Cache                StackExchange.Redis           @fastify/redis
 AI SDK               Semantic Kernel (opcional)    LangChain.js (opcional)
-Testes               xUnit + WebAppFactory         Jest + Supertest
-OpenAPI              Swagger/Scalar                @nestjs/swagger
+Testes               xUnit + WebAppFactory         Vitest + fastify.inject()
+OpenAPI              Swagger/Scalar                @fastify/swagger
 ```
 
 ## PARTE 3 — MULTI-AGENT EVOLUTION
@@ -751,7 +753,7 @@ A ordem recomendada é sempre:
 - Primeiro passo de multi-agent
 - Menor complexidade operacional
 - Melhor para debug, testes e evolução do lab
-- Ideal para .NET e NestJS manterem paridade funcional
+- Ideal para .NET e Fastify manterem paridade funcional
 
 **Agentes sugeridos:**
 - `RouterAgent` → decide quem deve agir
@@ -1136,5 +1138,5 @@ Neste ponto o AeroStack deve ser capaz de:
 - evoluir de monólito agentic para orquestração distribuída
 - usar revisão humana nos fluxos críticos
 - medir qualidade, grounding, custo, latência e taxa de sucesso
-- manter paridade funcional entre **.NET** e **NestJS/Fastify**
+- manter paridade funcional entre **.NET** e **Fastify**
 
