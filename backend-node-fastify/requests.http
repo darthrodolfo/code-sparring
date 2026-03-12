@@ -42,7 +42,7 @@ Content-Type: application/json
   ],
   "metadata": { "classification": "5th-gen" },
   "estimatedUnitsProduced": 195,
-  "estimatedActivateUnits": 183,
+  "estimatedActiveUnits": 183,
   "photoUrl": null,
   "manualArchive": null
 }
@@ -83,7 +83,7 @@ Content-Type: application/json
   ],
   "metadata": { "classification": "5th-gen" },
   "estimatedUnitsProduced": 195,
-  "estimatedActivateUnits": 180,
+  "estimatedActiveUnits": 180,
   "photoUrl": null,
   "manualArchive": null
 }

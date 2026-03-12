@@ -8,5 +8,16 @@ test('default root route', async (t) => {
   const res = await app.inject({
     url: '/'
   })
-  assert.deepStrictEqual(JSON.parse(res.payload), { root: true })
+  assert.equal(res.statusCode, 200)
+  assert.equal(res.headers['x-trace-id'] !== undefined, true)
+  assert.deepStrictEqual(JSON.parse(res.payload), {
+    data: {
+      service: 'backend-node-fastify',
+      version: '1.0.0',
+      status: 'ok'
+    },
+    meta: {
+      traceId: res.headers['x-trace-id']
+    }
+  })
 })
