@@ -1,14 +1,96 @@
 @baseUrl = http://localhost:3001
+@aircraftCreatedId = {{createAircraft.response.body.id}}
 
-### Health / Root
-GET {{baseUrl}}/
 
-### Example route
-GET {{baseUrl}}/example
+### Health check
+GET {{baseUrl}}/aircraft/decolamos
 
-### Aircraft route (current path from autoload + route definition)
+###
+
+### GET all aircraft
 GET {{baseUrl}}/aircraft
 
-### Aircraft decolamos endpoint test
-GET {{baseUrl}}/aircraft/decolamos
+###
+
+### POST create aircraft
+# @name createAircraft
+POST {{baseUrl}}/aircraft
+Content-Type: application/json
+
+{
+  "model": "F-22 Raptor",
+  "manufacturer": "Lockheed Martin",
+  "serialNumber": null,
+  "yearOfManufacture": 2005,
+  "priceMillionUSD": "143.8",
+  "emptyWeightKg": 19700,
+  "status": "Active",
+  "role": "Fighter",
+  "tags": ["stealth", "air-superiority"],
+  "firstFlightDate": "1997-09-07",
+  "lastMaintenanceTime": "2024-06-01T08:00:00Z",
+  "baseLocation": { "latitude": 30.4, "longitude": -86.5 },
+  "specs": {
+    "maxSpeedKmh": 1960,
+    "wingspanMeters": 13.56,
+    "rangeKm": 2960,
+    "maxAltitudeMeters": 19812,
+    "flightEndurance": "PT2H30M"
+  },
+  "conflictHistory": [
+    { "name": "Operation Iraqi Freedom", "startYear": 2003, "endYear": 2011, "roleInConflict": "Fighter" }
+  ],
+  "metadata": { "classification": "5th-gen" },
+  "estimatedUnitsProduced": 195,
+  "estimatedActivateUnits": 183,
+  "photoUrl": null,
+  "manualArchive": null
+}
+
+###
+
+### GET aircraft by id
+GET {{baseUrl}}/aircraft/{{aircraftCreatedId}}
+
+###
+
+### PUT update aircraft
+PUT {{baseUrl}}/aircraft/{{aircraftCreatedId}}
+Content-Type: application/json
+
+{
+  "model": "F-22 Raptor Block II",
+  "manufacturer": "Lockheed Martin",
+  "serialNumber": "LM-2005-001",
+  "yearOfManufacture": 2005,
+  "priceMillionUSD": "150.0",
+  "emptyWeightKg": 19800,
+  "status": "Maintenance",
+  "role": "Fighter",
+  "tags": ["stealth", "air-superiority", "updated"],
+  "firstFlightDate": "1997-09-07",
+  "lastMaintenanceTime": "2025-01-15T10:00:00Z",
+  "baseLocation": { "latitude": 30.4, "longitude": -86.5 },
+  "specs": {
+    "maxSpeedKmh": 1960,
+    "wingspanMeters": 13.56,
+    "rangeKm": 2960,
+    "maxAltitudeMeters": 19812,
+    "flightEndurance": "PT2H30M"
+  },
+  "conflictHistory": [
+    { "name": "Operation Iraqi Freedom", "startYear": 2003, "endYear": 2011, "roleInConflict": "Fighter" }
+  ],
+  "metadata": { "classification": "5th-gen" },
+  "estimatedUnitsProduced": 195,
+  "estimatedActivateUnits": 180,
+  "photoUrl": null,
+  "manualArchive": null
+}
+
+###
+
+### DELETE aircraft
+DELETE {{baseUrl}}/aircraft/{{aircraftCreatedId}} 
+
 
