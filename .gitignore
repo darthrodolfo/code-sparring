@@ -1,1 +1,60 @@
-backend-csharp/aerostack.db
+# ── Databases ────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Secrets ──────────────────────────────────────────────
+.env
+.env.*
+
+# ── OS metadata ──────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── C# / .NET ────────────────────────────────────────────
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+*.dll
+*.exe
+*.pdb
+
+# ── Python ───────────────────────────────────────────────
+**/__pycache__/
+*.pyc
+*.pyo
+**/.venv/
+**/venv/
+**/.mypy_cache/
+**/.pytest_cache/
+**/.ruff_cache/
+
+# ── Node.js / TypeScript ─────────────────────────────────
+**/node_modules/
+**/dist/
+**/.nest/
+**/.next/
+*.tsbuildinfo
+
+# ── Go ───────────────────────────────────────────────────
+**/vendor/
+
+# ── Dart ─────────────────────────────────────────────────
+**/.dart_tool/
+**/build/
+.packages
+**/.pub-cache/
+
+# ── Java / Spring Boot ───────────────────────────────────
+**/target/
+**/.gradle/
+**/.idea/
+*.class
+*.jar
+*.war
+
+# ── Logs ─────────────────────────────────────────────────
+*.log
+**/coverage/
