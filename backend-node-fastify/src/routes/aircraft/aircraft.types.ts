@@ -38,7 +38,7 @@ export interface AircraftV2 {
   model: string;
   manufacturer: string;
   serialNumber: string | null;
-  yearOfManufacture: string;
+  yearOfManufacture: number;
   priceMillionUSD: string; // decimal serializado como string
   emptyWeightKg: number;
   status: AircraftStatus;
