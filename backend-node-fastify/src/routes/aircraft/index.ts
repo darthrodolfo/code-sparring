@@ -42,7 +42,7 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
     "/",
     async (request, reply) => {
       const aircraftId = uuidv4();
-      const b = request.body;
+      const by = request.body;
       fastify.db
         .prepare(
           `
@@ -53,25 +53,25 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
         )
         .run(
           aircraftId,
-          b.model,
-          b.manufacturer,
-          b.serialNumber,
-          b.yearOfManufacture,
-          b.priceMillionUSD,
-          b.emptyWeightKg,
-          b.status,
-          b.role,
-          JSON.stringify(b.tags),
-          b.firstFlightDate,
-          b.lastMaintenanceTime,
-          JSON.stringify(b.baseLocation),
-          JSON.stringify(b.specs),
-          JSON.stringify(b.conflictHistory),
-          JSON.stringify(b.metadata),
-          b.estimatedUnitsProduced,
-          b.estimatedActiveUnits,
-          b.photoUrl,
-          b.manualArchive,
+          by.model,
+          by.manufacturer,
+          by.serialNumber,
+          by.yearOfManufacture,
+          by.priceMillionUSD,
+          by.emptyWeightKg,
+          by.status,
+          by.role,
+          JSON.stringify(by.tags),
+          by.firstFlightDate,
+          by.lastMaintenanceTime,
+          JSON.stringify(by.baseLocation),
+          JSON.stringify(by.specs),
+          JSON.stringify(by.conflictHistory),
+          JSON.stringify(by.metadata),
+          by.estimatedUnitsProduced,
+          by.estimatedActiveUnits,
+          by.photoUrl,
+          by.manualArchive,
         );
       const created = fastify.db
         .prepare("SELECT * FROM aircraft WHERE id = ?")
