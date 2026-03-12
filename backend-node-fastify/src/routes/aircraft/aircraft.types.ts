@@ -51,7 +51,7 @@ export interface AircraftV2 {
   conflictHistory: ConflictHistory[];
   metadata: Record<string, string>;
   estimatedUnitsProduced: number | null;
-  estimatedActivateUnits: number | null;
+  estimatedActiveUnits: number | null;
   photoUrl: string | null;
   manualArchive: string | null; //base64 encoded document
 }
