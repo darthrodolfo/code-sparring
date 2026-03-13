@@ -129,7 +129,7 @@ export const aircraftBodySchema = {
       items: {
         type: 'string',
         minLength: 1,
-        maxLength: 5
+        maxLength: 20
       }
     },
     firstFlightDate: {
