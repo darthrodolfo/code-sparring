@@ -55,6 +55,48 @@
       "request": "launch",
       "type": "node-terminal",
       "cwd": "${workspaceFolder}/backend-node-fastify"
-    }
+    },
+    {
+  "name": "Fastify Tests (all)",
+  "type": "node",
+  "request": "launch",
+  "cwd": "${workspaceFolder}/backend-node-fastify",
+  "runtimeExecutable": "node",
+  "runtimeArgs": [
+    "-r",
+    "ts-node/register"
+  ],
+  "program": "${workspaceFolder}/backend-node-fastify/test/index.ts",
+  "console": "integratedTerminal",
+  "internalConsoleOptions": "neverOpen",
+  "skipFiles": [
+    "<node_internals>/**"
+  ],
+  "env": {
+    "AIRCRAFT_DB_PATH": ":memory:"
+  }
+},
+{
+  "name": "Fastify Aircraft Test",
+  "type": "node",
+  "request": "launch",
+  "cwd": "${workspaceFolder}/backend-node-fastify",
+  "runtimeExecutable": "node",
+  "runtimeArgs": [
+    "-r",
+    "ts-node/register"
+  ],
+  "program": "${workspaceFolder}/backend-node-fastify/test/routes/aircraft.test.ts",
+  "console": "integratedTerminal",
+  "internalConsoleOptions": "neverOpen",
+  "skipFiles": [
+    "<node_internals>/**"
+  ],
+  "env": {
+    "AIRCRAFT_DB_PATH": ":memory:"
+  }
+}
+
   ]
 }
+

@@ -108,3 +108,29 @@ test('DELETE /aircraft/:id returns 204 with no body', async (t) => {
   assert.equal(res.statusCode, 204)
   assert.equal(res.payload, '')
 })
+
+
+test('POST /aircraft rejects invalid payload with VALIDATION_ERROR', async (t) => {
+  const app = await build(t);
+
+  const invalidPayload = {
+    ...payload,
+    model: '',
+    tags: [],
+    yearOfManufacture: 1800
+  }
+
+  const res = await app.inject({
+    method: "POST",
+    url: "/aircraft",
+    payload: invalidPayload
+  })
+
+  const body = JSON.parse(res.payload)
+
+  assert.equal(res.statusCode, 400)
+  assert.equal(body.error.code, "VALIDATION_ERROR")
+  assert.equal(body.error.traceId, res.headers["x-trace-id"])
+  assert.equal(Array.isArray(body.error.details), true)
+  assert.equal(body.error.details.length > 0, true)
+})

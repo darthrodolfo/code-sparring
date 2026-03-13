@@ -1,6 +1,8 @@
 import { FastifyPluginAsync } from "fastify";
 import { v4 as uuidv4 } from "uuid";
-import { AircraftV2 } from "./aircraft.types.js";
+import { AircraftV2 } from "./aircraft.types";
+import { aircraftBodySchema, aircraftIdParamsSchema } from "./aircraft.schemas";
+
 
 // ── DB row → AircraftV2 ───────────────────────────────────
 function rowToAircraft(row: Record<string, unknown>): AircraftV2 {
@@ -39,10 +41,16 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
   });
 
   fastify.post<{ Body: Omit<AircraftV2, "id"> }>(
-    "/",
+    "/", {
+    schema: {
+      body: aircraftBodySchema,
+    },
+  },
     async (request, reply) => {
+
       const aircraftId = uuidv4();
       const by = request.body;
+
       fastify.db
         .prepare(
           `
@@ -82,19 +90,30 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
     },
   );
 
-  fastify.get<{ Params: { id: string } }>("/:id", async (request, reply) => {
-    const row = fastify.db
-      .prepare("SELECT * FROM aircraft WHERE id = ?")
-      .get(request.params.id);
-    if (!row) {
-      throw fastify.httpErrors.notFound("Aircraft not found");
-    }
+  fastify.get<{ Params: { id: string } }>("/:id",
+    {
+      schema: {
+        params: aircraftIdParamsSchema,
+      },
+    }, async (request, reply) => {
+      const row = fastify.db
+        .prepare("SELECT * FROM aircraft WHERE id = ?")
+        .get(request.params.id);
+      if (!row) {
+        throw fastify.httpErrors.notFound("Aircraft not found");
+      }
 
-    return rowToAircraft(row as Record<string, unknown>);
-  });
+      return rowToAircraft(row as Record<string, unknown>);
+    });
 
   fastify.put<{ Params: { id: string }; Body: Omit<AircraftV2, "id"> }>(
     "/:id",
+    {
+      schema: {
+        params: aircraftIdParamsSchema,
+        body: aircraftBodySchema,
+      },
+    },
     async (request, reply) => {
       const existing = fastify.db
         .prepare("SELECT id FROM aircraft WHERE id = ?")
@@ -145,19 +164,24 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
     },
   );
 
-  fastify.delete<{ Params: { id: string } }>("/:id", async (request, reply) => {
-    const existing = fastify.db
-      .prepare("SELECT id FROM aircraft WHERE id = ?")
-      .get(request.params.id);
-    if (!existing) {
-      throw fastify.httpErrors.notFound("Aircraft not found");
-    }
+  fastify.delete<{ Params: { id: string } }>("/:id",
+    {
+      schema: {
+        params: aircraftIdParamsSchema,
+      },
+    }, async (request, reply) => {
+      const existing = fastify.db
+        .prepare("SELECT id FROM aircraft WHERE id = ?")
+        .get(request.params.id);
+      if (!existing) {
+        throw fastify.httpErrors.notFound("Aircraft not found");
+      }
 
-    fastify.db
-      .prepare("DELETE FROM aircraft WHERE id = ?")
-      .run(request.params.id);
+      fastify.db
+        .prepare("DELETE FROM aircraft WHERE id = ?")
+        .run(request.params.id);
 
-    return reply.code(204).send();
-  });
+      return reply.code(204).send();
+    });
 };
 export default aircraft;
