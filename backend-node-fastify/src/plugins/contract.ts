@@ -101,7 +101,7 @@ export default fp(async (fastify) => {
       : 500
     const details = normalizedError.validation?.map((item: { instancePath: string, message?: string }) => ({
       field: item.instancePath ? item.instancePath.replace(/^\//, '').replace(/\//g, '.') : undefined,
-      message: item.message ?? 'Invalid value'
+      message: item.message?.trim() || 'Invalid value'
     }))
 
     return reply.code(statusCode).send({
