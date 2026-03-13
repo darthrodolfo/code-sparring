@@ -108,3 +108,129 @@ test('DELETE /aircraft/:id returns 204 with no body', async (t) => {
   assert.equal(res.statusCode, 204)
   assert.equal(res.payload, '')
 })
+
+
+test('POST /aircraft rejects invalid payload with VALIDATION_ERROR', async (t) => {
+  const app = await build(t);
+
+  const invalidPayload = {
+    ...payload,
+    model: '',
+    tags: [],
+    yearOfManufacture: 1800
+  }
+
+  const res = await app.inject({
+    method: "POST",
+    url: "/aircraft",
+    payload: invalidPayload
+  })
+
+  const body = JSON.parse(res.payload)
+
+  assert.equal(res.statusCode, 400)
+  assert.equal(body.error.code, "VALIDATION_ERROR")
+  assert.equal(body.error.traceId, res.headers["x-trace-id"])
+  assert.equal(Array.isArray(body.error.details), true)
+  assert.equal(body.error.details.length > 0, true)
+})
+
+test('POST /aircraft rejects future firstFlightDate', async (t) => {
+  const app = await build(t)
+
+  const invalidPayload = {
+    ...payload,
+    firstFlightDate: '2999-01-01'
+  }
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/aircraft',
+    payload: invalidPayload
+  })
+
+  const body = JSON.parse(res.payload)
+
+  assert.equal(res.statusCode, 400)
+  assert.equal(body.error.code, 'VALIDATION_ERROR')
+  assert.equal(body.error.details.some((detail: { field: string }) => detail.field === 'firstFlightDate'), true)
+})
+
+test('POST /aircraft rejects priceMillionUSD equal to zero', async (t) => {
+  const app = await build(t)
+
+  const invalidPayload = {
+    ...payload,
+    priceMillionUSD: '0'
+  }
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/aircraft',
+    payload: invalidPayload
+  })
+
+  const body = JSON.parse(res.payload)
+
+  assert.equal(res.statusCode, 400)
+  assert.equal(body.error.code, 'VALIDATION_ERROR')
+  assert.equal(body.error.details.some((detail: { field: string }) => detail.field === 'priceMillionUSD'), true)
+})
+
+test('POST /aircraft rejects conflictHistory with startYear greater than endYear', async (t) => {
+  const app = await build(t)
+
+  const invalidPayload = {
+    ...payload,
+    conflictHistory: [
+      {
+        name: 'Invalid Conflict',
+        startYear: 2020,
+        endYear: 2010,
+        roleInConflict: 'Fighter'
+      }
+    ]
+  }
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/aircraft',
+    payload: invalidPayload
+  })
+
+  const body = JSON.parse(res.payload)
+
+  assert.equal(res.statusCode, 400)
+  assert.equal(body.error.code, 'VALIDATION_ERROR')
+  assert.equal(
+    body.error.details.some((detail: { field: string }) => detail.field === 'conflictHistory.0.startYear'),
+    true
+  )
+})
+
+test('POST /aircraft rejects duplicate serialNumber', async (t) => {
+  const app = await build(t)
+
+  await app.inject({
+    method: 'POST',
+    url: '/aircraft',
+    payload
+  })
+
+  const duplicatedPayload = {
+    ...payload,
+    model: 'F-22 Raptor Copy'
+  }
+
+  const res = await app.inject({
+    method: 'POST',
+    url: '/aircraft',
+    payload: duplicatedPayload
+  })
+
+  const body = JSON.parse(res.payload)
+
+  assert.equal(res.statusCode, 400)
+  assert.equal(body.error.code, 'VALIDATION_ERROR')
+  assert.equal(body.error.details.some((detail: { field: string }) => detail.field === 'serialNumber'), true)
+})

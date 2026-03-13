@@ -1,6 +1,8 @@
 import { FastifyPluginAsync } from "fastify";
 import { v4 as uuidv4 } from "uuid";
-import { AircraftV2 } from "./aircraft.types.js";
+import { AircraftV2 } from "./aircraft.types";
+import { aircraftBodySchema, aircraftIdParamsSchema } from "./aircraft.schemas";
+import { validateAircraftBusinessRules } from "./aircraft.validation";
 
 // ── DB row → AircraftV2 ───────────────────────────────────
 function rowToAircraft(row: Record<string, unknown>): AircraftV2 {
@@ -28,6 +30,57 @@ function rowToAircraft(row: Record<string, unknown>): AircraftV2 {
   };
 }
 
+function throwValidationError(
+  fastify: Parameters<FastifyPluginAsync>[0],
+  details: Array<{ field: string; message: string }>
+): never {
+  const error = fastify.httpErrors.badRequest("Aircraft validation failed") as Error & {
+    validation?: Array<{ instancePath: string; message: string }>
+  }
+
+  error.validation = details.map((detail) => ({
+    instancePath: `/${detail.field.replace(/\./g, '/')}`,
+    message: detail.message
+  }))
+
+  throw error
+}
+
+function validateDuplicatedSerialNumber(
+  fastify: Parameters<FastifyPluginAsync>[0],
+  serialNumber: string | null,
+  currentAircraftId?: string
+): void {
+  if (!serialNumber) {
+    return
+  }
+
+  const duplicateSerialNumber = findAircraftBySerialNumber(fastify.db, serialNumber, currentAircraftId);
+
+  if (duplicateSerialNumber) {
+    throwValidationError(fastify, [
+      {
+        field: "serialNumber",
+        message: "Serial number must be unique"
+      }
+    ])
+  }
+}
+
+function findAircraftBySerialNumber(
+  db: any,
+  serial: string,
+  excludeId?: string
+) {
+  if (excludeId) {
+    return db.prepare("SELECT id FROM aircraft WHERE serial_number = ? AND id <> ?")
+      .get(serial, excludeId);
+  }
+  return db.prepare("SELECT id FROM aircraft WHERE serial_number = ?")
+    .get(serial);
+}
+
+
 const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.get("/decolamos", async () => {
     return { message: "Decolamos Fastify!" };
@@ -39,10 +92,24 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
   });
 
   fastify.post<{ Body: Omit<AircraftV2, "id"> }>(
-    "/",
+    "/", {
+    schema: {
+      body: aircraftBodySchema,
+    },
+  },
     async (request, reply) => {
+
       const aircraftId = uuidv4();
       const by = request.body;
+      const businessErrors = validateAircraftBusinessRules(by)
+
+      if (businessErrors.length > 0) {
+        throwValidationError(fastify, businessErrors)
+      }
+
+      validateDuplicatedSerialNumber(fastify,
+        by.serialNumber)
+
       fastify.db
         .prepare(
           `
@@ -82,19 +149,30 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
     },
   );
 
-  fastify.get<{ Params: { id: string } }>("/:id", async (request, reply) => {
-    const row = fastify.db
-      .prepare("SELECT * FROM aircraft WHERE id = ?")
-      .get(request.params.id);
-    if (!row) {
-      throw fastify.httpErrors.notFound("Aircraft not found");
-    }
+  fastify.get<{ Params: { id: string } }>("/:id",
+    {
+      schema: {
+        params: aircraftIdParamsSchema,
+      },
+    }, async (request, reply) => {
+      const row = fastify.db
+        .prepare("SELECT * FROM aircraft WHERE id = ?")
+        .get(request.params.id);
+      if (!row) {
+        throw fastify.httpErrors.notFound("Aircraft not found");
+      }
 
-    return rowToAircraft(row as Record<string, unknown>);
-  });
+      return rowToAircraft(row as Record<string, unknown>);
+    });
 
   fastify.put<{ Params: { id: string }; Body: Omit<AircraftV2, "id"> }>(
     "/:id",
+    {
+      schema: {
+        params: aircraftIdParamsSchema,
+        body: aircraftBodySchema,
+      },
+    },
     async (request, reply) => {
       const existing = fastify.db
         .prepare("SELECT id FROM aircraft WHERE id = ?")
@@ -103,7 +181,18 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
         throw fastify.httpErrors.notFound("Aircraft not found");
       }
 
-      const b = request.body;
+      const by = request.body;
+
+      const businessErrors = validateAircraftBusinessRules(by)
+
+      if (businessErrors.length > 0) {
+        throwValidationError(fastify, businessErrors)
+      }
+
+      validateDuplicatedSerialNumber(fastify,
+        by.serialNumber,
+        request.params.id)
+
       fastify.db
         .prepare(
           `
@@ -117,25 +206,25 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
     `,
         )
         .run(
-          b.model,
-          b.manufacturer,
-          b.serialNumber,
-          b.yearOfManufacture,
-          b.priceMillionUSD,
-          b.emptyWeightKg,
-          b.status,
-          b.role,
-          JSON.stringify(b.tags),
-          b.firstFlightDate,
-          b.lastMaintenanceTime,
-          JSON.stringify(b.baseLocation),
-          JSON.stringify(b.specs),
-          JSON.stringify(b.conflictHistory),
-          JSON.stringify(b.metadata),
-          b.estimatedUnitsProduced,
-          b.estimatedActiveUnits,
-          b.photoUrl,
-          b.manualArchive,
+          by.model,
+          by.manufacturer,
+          by.serialNumber,
+          by.yearOfManufacture,
+          by.priceMillionUSD,
+          by.emptyWeightKg,
+          by.status,
+          by.role,
+          JSON.stringify(by.tags),
+          by.firstFlightDate,
+          by.lastMaintenanceTime,
+          JSON.stringify(by.baseLocation),
+          JSON.stringify(by.specs),
+          JSON.stringify(by.conflictHistory),
+          JSON.stringify(by.metadata),
+          by.estimatedUnitsProduced,
+          by.estimatedActiveUnits,
+          by.photoUrl,
+          by.manualArchive,
           request.params.id,
         );
       const updated = fastify.db
@@ -145,19 +234,24 @@ const aircraft: FastifyPluginAsync = async (fastify): Promise<void> => {
     },
   );
 
-  fastify.delete<{ Params: { id: string } }>("/:id", async (request, reply) => {
-    const existing = fastify.db
-      .prepare("SELECT id FROM aircraft WHERE id = ?")
-      .get(request.params.id);
-    if (!existing) {
-      throw fastify.httpErrors.notFound("Aircraft not found");
-    }
+  fastify.delete<{ Params: { id: string } }>("/:id",
+    {
+      schema: {
+        params: aircraftIdParamsSchema,
+      },
+    }, async (request, reply) => {
+      const existing = fastify.db
+        .prepare("SELECT id FROM aircraft WHERE id = ?")
+        .get(request.params.id);
+      if (!existing) {
+        throw fastify.httpErrors.notFound("Aircraft not found");
+      }
 
-    fastify.db
-      .prepare("DELETE FROM aircraft WHERE id = ?")
-      .run(request.params.id);
+      fastify.db
+        .prepare("DELETE FROM aircraft WHERE id = ?")
+        .run(request.params.id);
 
-    return reply.code(204).send();
-  });
+      return reply.code(204).send();
+    });
 };
 export default aircraft;

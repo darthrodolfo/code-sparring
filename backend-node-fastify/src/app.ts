@@ -7,6 +7,13 @@ export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPlugin
 }
 // Pass --options via CLI arguments in command to enable these options.
 const options: AppOptions = {
+  ajv: {
+    customOptions: {
+      allErrors: true,
+      removeAdditional: 'all',
+      coerceTypes: false,
+    }
+  }
 }
 
 const app: FastifyPluginAsync<AppOptions> = async (
