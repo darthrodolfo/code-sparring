@@ -49,7 +49,7 @@ Each safari stack goes from **zero → CRUD → SQLite**, then stops. After the 
 
 - The user is a **senior engineer with 15+ years of experience**. They know how HTTP works.
 - The goal is **language idioms + framework DX + ecosystem ergonomics**, not reimplementing routing.
-- Examples: Gin/Echo for Go, Dart Frog for Dart, NestJS/Fastify for Node, FastAPI for Python, Spring Boot for Java, Minimal API for C#.
+- Examples: Gin/Echo for Go, Dart Frog for Dart, Fastify for the active Node.js stack, FastAPI for Python, Spring Boot for Java, Minimal API for C#.
 - If a stdlib approach was already used in a completed stack (e.g., Go with `net/http`), do not retroactively change it.
 
 ## Anti-Pattern: Near-Duplicate Stacks
@@ -100,8 +100,8 @@ For detailed conventions, mentoring protocol, and code standards → see [conven
 - **C# (.NET 9):** Round 1 COMPLETE (CRUD + SQLite)
 - **Python:** Round 1 COMPLETE (CRUD + SQLite)
 - **Go:** Round 1 COMPLETE (CRUD + SQLite)
-- **Node.js / NestJS:** Round 1 COMPLETE (CRUD + SQLite) — stop-point reached, safari only
-- **Node.js + Fastify:** Round 1 COMPLETE (CRUD + SQLite) — **Tier 1 for AI integrations**
+- **Node.js / NestJS:** Round 1 COMPLETE (CRUD + SQLite) — archived safari reference only
+- **Node.js + Fastify:** Round 1 COMPLETE (CRUD + SQLite) — **Tier 1 active focus for AI integrations**
 - **Dart (Dart Frog):** Round 1 COMPLETE (CRUD + SQLite)
 - **Java / Spring Boot:** Planned
 

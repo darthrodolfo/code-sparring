@@ -9,15 +9,17 @@ The backend safari is a controlled sequence of implementations of the **same dom
 1. **C# / .NET 9 Minimal API**
 2. **Python (FastAPI / Pydantic v2)**
 3. **Go (stdlib)**
-4. **Node.js / NestJS + Express**
-5. **Node.js puro + Fastify**
-6. **Java / Spring Boot**
-7. **Dart backend (Dart Frog)**
-8. Return to **C# / .NET** for the premium final backend
+4. **Node.js puro + Fastify**
+5. **Java / Spring Boot**
+6. **Dart backend (Dart Frog)**
+7. Return to **C# / .NET** for the premium final backend
+
+Legacy reference kept in the repo:
+- **Node.js / NestJS + Express** — archived safari snapshot, not part of the active roadmap
 
 ### Node.js Stack Decision
 
-The Node.js/TypeScript Tier 1 stack for AI integrations is **Fastify** (pure, no NestJS wrapper). NestJS completed its safari stop-point and remains as a reference implementation only.
+The active Node.js/TypeScript stack for premium work and AI integrations is **Fastify** (pure, no NestJS wrapper). The existing NestJS backend remains only as an archived safari reference in the repo.
 
 - **Fastify (pure)** — Tier 1, plugin-based, schema-driven, used for AI integrations
 - **NestJS + Express** — safari complete, stop-point reached, no further expansion
@@ -39,15 +41,15 @@ Before suggesting any stack variation, ask: **"Does this teach a meaningfully di
 
 ### Main Stacks
 
-| Stack | Framework | Persistence |
-|-------|-----------|-------------|
-| C# / .NET 9 | Minimal API | SQLite |
-| Python | FastAPI / Pydantic v2 | SQLite (aiosqlite) |
-| Go | stdlib (net/http) | SQLite (go-sqlite3) |
-| Node.js | NestJS + Express | SQLite (better-sqlite3) | Safari only |
-| Node.js | Fastify (puro) | SQLite (better-sqlite3) | **Tier 1 — AI integrations** |
-| Java | Spring Boot | SQLite (planned) |
-| Dart | Dart Frog | SQLite (sqlite3) |
+| Stack | Framework | Persistence | Status |
+|-------|-----------|-------------|--------|
+| C# / .NET 9 | Minimal API | SQLite | Active |
+| Python | FastAPI / Pydantic v2 | SQLite (aiosqlite) | Safari complete |
+| Go | stdlib (net/http) | SQLite (go-sqlite3) | Safari complete |
+| Node.js | Fastify (puro) | SQLite (better-sqlite3) | **Tier 1 — active focus for AI integrations** |
+| Node.js | NestJS + Express | SQLite (better-sqlite3) | Archived safari reference only |
+| Java | Spring Boot | SQLite (planned) | Planned |
+| Dart | Dart Frog | SQLite (sqlite3) | Safari complete |
 
 ### Common Persistence Baseline
 

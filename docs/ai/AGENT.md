@@ -4,7 +4,7 @@
 
 ## Quick Overview
 
-AeroStack Lab is a polyglot backend training ground. The same rich **Aircraft** domain (20-field entity) is implemented across multiple stacks (C#, Python, Go, Node.js/NestJS, Dart, Java) to compare language ergonomics, framework DX, and persistence patterns.
+AeroStack Lab is a polyglot backend training ground. The same rich **Aircraft** domain (20-field entity) is implemented across multiple stacks (C#, Python, Go, Node.js/Fastify, Dart, Java) to compare language ergonomics, framework DX, and persistence patterns. An older NestJS safari snapshot remains in the repo only as a legacy reference, not as an active focus stack.
 
 This is a **learning and experimentation project**, not a production system.
 

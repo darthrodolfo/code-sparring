@@ -37,16 +37,16 @@ Topics that wait for the Tier 1 stacks (.NET + Node.js/Fastify):
 | C# (.NET 9) | Phase 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
 | Python (FastAPI) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
 | Go (stdlib) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
-| Node.js / NestJS | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
+| Node.js / NestJS | Phase 0 + 0.5 + Round 1 **COMPLETE** | Archived safari reference only |
 | Dart (Dart Frog) | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
-| Node.js puro + Fastify | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite |
+| Node.js puro + Fastify | Phase 0 + 0.5 + Round 1 **COMPLETE** | Full CRUD + SQLite, Tier 1 active focus |
 | Java / Spring Boot | Delayed/Postponed | — |
 
 ### Next Actions
 
 1. Safari complete for all primary stacks (Java / Spring Boot postponed)
 2. Next: return to C# / .NET + Node.js / Fastify as Tier 1 for pre-AI foundations + AI integrations
-3. NestJS stays at stop-point — safari reference only, no further expansion
+3. NestJS stays archived at the safari stop-point — reference only, no further expansion
 
 ---
 
@@ -85,7 +85,7 @@ Working observations, not permanent dogma.
 
 **Pain points:** More verbose for business CRUD, more manual HTTP/JSON/error handling, more manual mapping and helper functions, less ergonomic than .NET minimal API for rich business endpoints.
 
-### Node.js / NestJS
+### Node.js / NestJS (legacy reference only)
 
 **Strengths:** Decorator-based routing is clean and readable, modular architecture with DI out of the box, TypeScript gives strong typing over JS runtime, class-validator decorator pattern similar to C# data annotations, PartialType avoids DTO duplication, better-sqlite3 sync API is simple and predictable.
 
@@ -114,3 +114,32 @@ Expected premium topics (both stacks):
 Both stacks deliver the same capabilities with different architectural approaches:
 - **.NET** — opiniated, convention-based, enterprise patterns (Polly, Serilog, EF Core)
 - **Fastify** — plugin-based, schema-driven, composition over inheritance (Pino, Ajv, native hooks)
+
+### Node.js / Fastify — Tier 1 Execution Tracking
+
+Current checkpoint after the safari stop-point on the active Node.js Tier 1 stack:
+
+- Safari stop-point already complete: full CRUD + SQLite
+- ETAPA 0 COMPLETE — Contract:
+  - global success/error contract
+  - `x-trace-id`
+  - response envelope with `{ data, meta }`
+  - standardized error envelope with `{ error: { code, message, details, traceId } }`
+- ETAPA 1 COMPLETE — Validation:
+  - JSON Schema + Ajv validation on routes
+  - business-rule validation outside schema
+  - `serialNumber` uniqueness validation
+  - integration tests passing for happy-path and invalid payload scenarios
+
+Next planned step:
+- ETAPA 2 — Idempotency (`Idempotency-Key` on POST)
+
+Execution status snapshot:
+- ETAPA 0 — Contract — complete
+- ETAPA 1 — Validation — complete
+- ETAPA 2 — Idempotency — pending
+- ETAPA 3 — Authentication + Rate Limiting — pending
+- ETAPA 4 — Observability + Health + Metrics + OpenAPI — pending
+- ETAPA 5 — Redis — pending
+- ETAPA 6 — Unit + Integration Tests Expansion — pending
+- ETAPA 7 — Structural Refactor — pending
