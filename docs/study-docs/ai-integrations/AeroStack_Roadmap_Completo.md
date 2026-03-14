@@ -359,7 +359,7 @@ Isso é exatamente o que o roadmap unificado chama de "Fase 0 — Fundações de
 
 **Prioridade por linguagem:**
 1. .NET (principal) — tudo acima completo
-2. Fastify (clone Node.js/TypeScript) — tudo acima completo
+2. Fastify (stack Node.js/TypeScript Tier 1 ativa) — tudo acima completo
 3. Go, Python, Dart — CRUD + contrato + validações + testes básicos (nivelar "nível médio")
 
 ---
